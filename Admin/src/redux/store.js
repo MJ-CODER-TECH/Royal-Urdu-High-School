@@ -9,7 +9,7 @@ import certificateReducer from "./certificate/certificateSlice";
 import attendanceReducer from "./attendance/attendanceSlice";
 import feeHeadReducer from "./fee/feeHead/feeHeadSlice";
 import feeStructureReducer from "./fee/feeStructure/feeStructureSlice";
-import academicYearReducer from "./master/AcademicYearSlice";
+import academicYearReducer from "./master/academicYearSlice";
 import studentFeeReducer from "./fee/studentFee/studentFeeSlice";
 import feeCollectionReducer from "./fee/feeCollection/feeCollectionSlice"
 import examReducer from "./exam/examMaster/examSlice";
