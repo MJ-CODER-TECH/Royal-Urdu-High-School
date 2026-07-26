@@ -2,12 +2,11 @@ import axios from "axios";
 import { getAccessToken, clearTokens } from "../utils/storage";
 
 const api = axios.create({
-    baseURL:
-        import.meta.env.VITE_API_URL ||
-        "http://localhost:5000/api/v1",
-
+    baseURL: `${import.meta.env.VITE_API_URL}/api/v1`,
     timeout: 15000,
+    withCredentials: true,
 });
+
 
 // Attach token to every request
 api.interceptors.request.use(
@@ -16,18 +15,15 @@ api.interceptors.request.use(
         const token = getAccessToken();
 
         if (token) {
-
-            config.headers.Authorization =
-                `Bearer ${token}`;
-
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
         return config;
 
     },
-
     (error) => Promise.reject(error)
 );
+
 
 // Handle Unauthorized Responses
 api.interceptors.response.use(
@@ -38,17 +34,12 @@ api.interceptors.response.use(
 
         const status = error.response?.status;
 
-        // Token expired / Unauthorized
         if (status === 401 || status === 403) {
 
-            // Clear local storage
             clearTokens();
 
-            // Redirect to login page
             if (window.location.pathname !== "/login") {
-
                 window.location.replace("/login");
-
             }
 
         }
@@ -58,5 +49,6 @@ api.interceptors.response.use(
     }
 
 );
+
 
 export default api;
