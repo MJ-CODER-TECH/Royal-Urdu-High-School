@@ -8,7 +8,7 @@ import {
     updateClass,
     deleteClass,
     changeClassStatus,
-} from "./Classmasterthunk";
+} from "./classMasterthunk";
 
 const initialState = {
 

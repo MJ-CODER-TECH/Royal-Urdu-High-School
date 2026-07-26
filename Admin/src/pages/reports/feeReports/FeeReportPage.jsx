@@ -5,7 +5,7 @@ import ReportsFilters from "../../../components/reports/ReportFilters";
 import ReportAction from "../../../components/reports/ReportActions";
 import ReportTable from "../../../components/reports/ReportTable";
 
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
 import {
     fetchClasses,
     fetchSections,

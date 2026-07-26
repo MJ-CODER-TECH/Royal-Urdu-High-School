@@ -16,9 +16,9 @@ import {
   getFeeCollections,
   deleteFeeReceipt
 } from "../../../redux/fee/feeCollection/feeCollectionThunk";
-import { fetchClasses } from "../../../redux/master/Classmasterthunk";
-import { fetchSections } from "../../../redux/section/sectionthunk";
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
+import { fetchClasses } from "../../../redux/master/classMasterThunk";
+import { fetchSections } from "../../../redux/section/sectionThunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
 
 import usePermission from "../../../hooks/usePermission";
 import CollectFeeModal from "./CollectFeeModal";

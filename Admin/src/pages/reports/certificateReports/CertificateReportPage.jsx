@@ -13,8 +13,8 @@ import ReportActions from "../../../components/reports/ReportActions";
 import ReportTable from "../../../components/reports/ReportTable";
 
 import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
-import { fetchClasses } from "../../../redux/master/Classmasterthunk";
-import { fetchSections } from "../../../redux/section/sectionthunk";
+import { fetchClasses } from "../../../redux/master/classMasterThunk";
+import { fetchSections } from "../../../redux/section/sectionThunk";
 
 const CertificateReportPage = () => {
 

@@ -8,8 +8,8 @@ import {
   getStudentFeeById,
 } from "../../../redux/fee/studentFee/studentFeeThunk";
 
-import { fetchClasses } from "../../../redux/master/Classmasterthunk";
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
+import { fetchClasses } from "../../../redux/master/classMasterThunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
 
 import StudentFeeTable from "./StudentFeeTable";
 import GenerateFeeModal from "./GenerateFeeModal";

@@ -6,7 +6,7 @@ import {
   getClasses,
   deleteClass,
   changeClassStatus,
-} from "../../../redux/master/Classmasterthunk";
+} from "../../../redux/master/classMasterThunk";
 import { clearSelectedClass } from "../../../redux/master/classMasterSlice";
 
 import ClassTable from "./ClassTable";

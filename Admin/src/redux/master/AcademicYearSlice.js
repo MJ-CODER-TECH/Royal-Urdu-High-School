@@ -17,7 +17,7 @@ import {
 
     changeAcademicYearStatus,
 
-} from "./AcademicYearThunk";
+} from "./academicYearThunk";
 
 
 

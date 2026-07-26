@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
 import {
     fetchClasses,
     fetchSections,

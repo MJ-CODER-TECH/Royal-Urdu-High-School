@@ -8,8 +8,8 @@ import {
 } from "../../../redux/fee/feeStructure/feeStructureThunk";
 
 import { getFeeHeads } from "../../../redux/fee/feeHead/feeHeadThunk";
-import { fetchClasses } from "../../../redux/master/Classmasterthunk";
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
+import { fetchClasses } from "../../../redux/master/classMasterThunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
 
 import FeeStructureTable from "./FeeStructureTable";
 import FeeStructureModal from "./FeeStructureModal";

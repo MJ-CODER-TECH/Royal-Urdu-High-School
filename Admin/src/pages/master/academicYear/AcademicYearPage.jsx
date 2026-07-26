@@ -6,7 +6,7 @@ import {
   getAcademicYears,
   deleteAcademicYear,
   changeAcademicYearStatus,
-} from "../../../redux/master/AcademicYearThunk";
+} from "../../../redux/master/academicYearThunk";
 
 import { clearSelectedAcademicYear } from "../../../redux/master/academicYearSlice";
 

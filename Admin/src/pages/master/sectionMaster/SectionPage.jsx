@@ -6,7 +6,7 @@ import {
   getSections,
   deleteSection,
   changeSectionStatus,
-} from "../../../redux/section/sectionthunk";
+} from "../../../redux/section/sectionThunk";
 
 import { clearSelectedSection } from "../../../redux/section/sectionSlice";
 

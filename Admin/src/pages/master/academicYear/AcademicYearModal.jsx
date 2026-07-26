@@ -6,7 +6,7 @@ import {
   createAcademicYear,
   updateAcademicYear,
   getAcademicYears,
-} from "../../../redux/master/AcademicYearThunk";
+} from "../../../redux/master/academicYearThunk";
 
 import AcademicYearForm from "./AcademicYearForm";
 

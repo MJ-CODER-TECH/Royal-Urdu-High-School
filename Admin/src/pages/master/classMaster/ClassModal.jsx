@@ -6,7 +6,7 @@ import {
   createClass,
   updateClass,
   getClasses,
-} from "../../../redux/master/Classmasterthunk";
+} from "../../../redux/master/classMasterThunk";
 
 import ClassForm from "./ClassForm";
 

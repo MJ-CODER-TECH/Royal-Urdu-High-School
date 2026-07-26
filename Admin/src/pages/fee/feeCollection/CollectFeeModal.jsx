@@ -8,9 +8,9 @@ import {
   collectFee,
 } from "../../../redux/fee/feeCollection/feeCollectionThunk";
 
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
-import { fetchClasses } from "../../../redux/master/Classmasterthunk";
-import { fetchSections } from "../../../redux/section/sectionthunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
+import { fetchClasses } from "../../../redux/master/classMasterThunk";
+import { fetchSections } from "../../../redux/section/sectionThunk";
 
 const CollectFeeModal = ({ open, onClose, onSuccess }) => {
   const dispatch = useDispatch();

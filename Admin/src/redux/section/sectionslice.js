@@ -8,7 +8,7 @@ import {
     updateSection,
     deleteSection,
     changeSectionStatus,
-} from "./sectionthunk";
+} from "./sectionThunk";
 
 
 const initialState = {

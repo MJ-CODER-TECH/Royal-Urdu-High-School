@@ -5,8 +5,8 @@ import toast from "react-hot-toast";
 import { X, Loader2, CreditCard } from "lucide-react";
 
 import { assignStudentFee } from "../../../redux/fee/studentFee/studentFeeThunk";
-import { fetchAcademicYears } from "../../../redux/master/AcademicYearThunk";
-import { fetchClasses } from "../../../redux/master/Classmasterthunk";
+import { fetchAcademicYears } from "../../../redux/master/academicYearThunk";
+import { fetchClasses } from "../../../redux/master/classMasterThunk";
 
 const GenerateFeeModal = ({ open, close }) => {
   const dispatch = useDispatch();

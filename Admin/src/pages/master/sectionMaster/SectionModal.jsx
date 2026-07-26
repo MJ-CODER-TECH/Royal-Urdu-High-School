@@ -6,7 +6,7 @@ import {
   createSection,
   updateSection,
   getSections,
-} from "../../../redux/section/sectionthunk";
+} from "../../../redux/section/sectionThunk";
 
 import SectionForm from "./SectionForm";
 
