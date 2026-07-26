@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Runtime files
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+
+# Build
+dist/
+build/
+
+# Cache
+.cache/
+.tmp/
+temp/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# PM2
+.pm2/
+
+# Uploads (optional)
+uploads/
+public/uploads/
+
+# SQLite Database (if used)
+*.sqlite
+*.sqlite3
+*.db
+
+# Testing
+.nyc_output/
+
+# Misc
+*.tgz

@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+
+html {
+    color-scheme: light; /* stops browsers from injecting a dark default bg */
+}
+
+html,
+body,
+#root {
+    background-color: #f1f5f9; /* slate-100 — same as DashboardLayout's main bg */
+    min-height: 100%;
+}
