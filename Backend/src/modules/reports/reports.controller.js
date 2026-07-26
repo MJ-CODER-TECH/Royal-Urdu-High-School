@@ -21,6 +21,7 @@ exports.getStudentReport = async (req, res, next) => {
     }
 };
 
+
 /*
 |--------------------------------------------------------------------------
 | STUDENT REPORT - PRINT
