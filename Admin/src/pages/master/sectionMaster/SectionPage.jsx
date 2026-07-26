@@ -8,7 +8,7 @@ import {
   changeSectionStatus,
 } from "../../../redux/section/sectionThunk";
 
-import { clearSelectedSection } from "../../../redux/section/sectionSlice";
+import { clearSelectedSection } from "../../../redux/section/sectionslice";
 
 import SectionTable from "./SectionTable";
 import SectionModal from "./SectionModal";

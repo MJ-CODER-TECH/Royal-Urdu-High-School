@@ -28,7 +28,7 @@ import {
 import {
     fetchAcademicYears
 
-} from "../../../redux/master/AcademicYearThunk";
+} from "../../../redux/master/academicYearThunk";
 
 
 // Exams

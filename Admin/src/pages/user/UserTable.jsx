@@ -16,7 +16,7 @@ import {
 } from "../../redux/user/userThunk";
 
 import StatusBadge from "./StatusBadge";
-import ResetPasswordModal from "./ResetPasswordModal";
+import ResetPasswordModal from "./Resetpasswordmodal";
 import usePermission from "../../hooks/usePermission";
 
 const columns = [
