@@ -117,7 +117,7 @@ const REVERSE_FIELD_KEY_MAP = Object.entries(FIELD_KEY_MAP).reduce((acc, [camelK
 const camelToSnake = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 const snakeToCamel = (str) => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 
-const API_BASE_URL = "http://localhost:5000"; // TODO: move to import.meta.env.VITE_API_URL
+const VITE_API_URL = "http://localhost:5000"; // TODO: move to import.meta.env.VITE_API_URL
 
 // ---- Shared field styles ----
 const inputClass =
@@ -244,7 +244,7 @@ const StudentForm = ({ student, onClose }) => {
 
     if (student.photoUrl || student.photo_path) {
       setPhotoPreview(
-        student.photoUrl ?? `${API_BASE_URL}/${student.photo_path.replace(/\\/g, "/")}`,
+        student.photoUrl ?? `${VITE_API_URL}/${student.photo_path.replace(/\\/g, "/")}`,
       );
     } else {
       setPhotoPreview(null);

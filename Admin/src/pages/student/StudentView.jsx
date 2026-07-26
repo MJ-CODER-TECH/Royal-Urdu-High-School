@@ -1,6 +1,6 @@
 import { X, User, Loader2 } from "lucide-react";
 
-const API_BASE_URL = "http://localhost:5000"; // TODO: move to import.meta.env.VITE_API_URL
+const VITE_API_URL = "http://localhost:5000"; // TODO: move to import.meta.env.VITE_API_URL
 
 const Field = ({ label, value }) => (
   <div>
@@ -32,7 +32,7 @@ const StudentView = ({ open, onClose, student, loading }) => {
             <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
               {student?.photo_path ? (
                 <img
-                  src={`${API_BASE_URL}/${student.photo_path}`}
+                  src={`${VITE_API_URL}/${student.photo_path}`}
                   alt={fullName}
                   className="h-full w-full object-cover"
                 />
