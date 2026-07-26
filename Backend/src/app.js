@@ -20,37 +20,24 @@ app.use(
 
 
 // CORS Configuration
-<<<<<<< HEAD
-const corsOptions = {
-=======
-app.use(cors({
->>>>>>> 252378e (Fix express cors options wildcard issue)
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-    methods: [
-        "GET",
-        "POST",
-        "PUT",
-        "PATCH",
-        "DELETE",
-        "OPTIONS"
-    ],
-    allowedHeaders: [
-        "Content-Type",
-        "Authorization"
-    ],
-<<<<<<< HEAD
-};
-=======
-}));
->>>>>>> 252378e (Fix express cors options wildcard issue)
-
-
-app.use(cors(corsOptions));
-
-
-// Handle Preflight Requests
-app.options("*", cors(corsOptions));
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+        methods: [
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "OPTIONS"
+        ],
+        allowedHeaders: [
+            "Content-Type",
+            "Authorization"
+        ],
+    })
+);
 
 
 // Body Parser
@@ -70,17 +57,17 @@ app.use(
 app.use(routes);
 
 
-// Error Handler (Always Last)
-app.use(errorMiddleware);
-
-
-// Health Check
+// Root API Check
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
         message: "School ERP API is Running"
     });
 });
+
+
+// Error Handler (Always Last)
+app.use(errorMiddleware);
 
 
 module.exports = app;
