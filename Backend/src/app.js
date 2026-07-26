@@ -20,7 +20,11 @@ app.use(
 
 
 // CORS Configuration
+<<<<<<< HEAD
 const corsOptions = {
+=======
+app.use(cors({
+>>>>>>> 252378e (Fix express cors options wildcard issue)
     origin: process.env.FRONTEND_URL,
     credentials: true,
     methods: [
@@ -35,7 +39,11 @@ const corsOptions = {
         "Content-Type",
         "Authorization"
     ],
+<<<<<<< HEAD
 };
+=======
+}));
+>>>>>>> 252378e (Fix express cors options wildcard issue)
 
 
 app.use(cors(corsOptions));
