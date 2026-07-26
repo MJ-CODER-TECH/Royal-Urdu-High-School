@@ -1,14 +1,15 @@
-const express = require('express');
+const express = require("express");
 const helmet = require("helmet");
+const cors = require("cors");
+const path = require("path");
 
 const app = express();
-const routes = require('./routes');
-const errorMiddleware = require('./middlewares/error.middleware');
-const path = require('path');
-const cors = require("cors");
+
+const routes = require("./routes");
+const errorMiddleware = require("./middlewares/error.middleware");
 
 
-
+// Security Middleware
 app.use(
     helmet({
         crossOriginResourcePolicy: {
@@ -18,16 +19,37 @@ app.use(
 );
 
 
-app.use(cors({
+// CORS Configuration
+const corsOptions = {
     origin: process.env.FRONTEND_URL,
-    credentials:true,
-}));
+    credentials: true,
+    methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS"
+    ],
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization"
+    ],
+};
 
 
+app.use(cors(corsOptions));
+
+
+// Handle Preflight Requests
+app.options("*", cors(corsOptions));
+
+
+// Body Parser
 app.use(express.json());
 
 
-// STATIC FILES FIRST
+// Static Files
 app.use(
     "/uploads",
     express.static(
@@ -36,19 +58,19 @@ app.use(
 );
 
 
-// API ROUTES
+// API Routes
 app.use(routes);
 
 
-// ERROR HANDLER LAST
+// Error Handler (Always Last)
 app.use(errorMiddleware);
 
 
-
-app.get("/",(req,res)=>{
+// Health Check
+app.get("/", (req, res) => {
     res.status(200).json({
-        success:true,
-        message:"school Erp Api is Running"
+        success: true,
+        message: "School ERP API is Running"
     });
 });
 
