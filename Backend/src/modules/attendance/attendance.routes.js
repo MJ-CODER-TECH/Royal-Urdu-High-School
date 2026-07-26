@@ -9,7 +9,7 @@ const validationMiddleware = require("../../middlewares/validation.middleware");
 
 const authMiddleware = require("../../middlewares/auth.middleware");
 // const roleMiddleware = require("../../middlewares/role.middleware");
-const permissionMiddleware = require("../../middlewares/permission.Middleware");
+const permissionMiddleware = require("../../middlewares/permission.middleware");
 
 // Create Attendance
 router.post(
