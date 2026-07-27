@@ -69,7 +69,10 @@ exports.createStudent = async (req, res) => {
     country: req.body.country,
     pincode: req.body.pincode,
 
-    photo_path: req.file ? req.file.path : null,
+    // photo_path: req.file ? req.file.path : null,
+    photo_path: req.file
+  ? `uploads/photos/${req.file.filename}`
+  : null,
 
     // NEW — logged-in user se aana chahiye, form se nahi
     created_by: req.user?.id ?? null,
@@ -184,9 +187,12 @@ exports.updateStudent = async (req, res) => {
         country: req.body.country ?? null,
         pincode: req.body.pincode ?? null,
 
+        // photo_path: req.file
+        //     ? req.file.path
+        //     : (req.body.existing_photo_path ?? null),
         photo_path: req.file
-            ? req.file.path
-            : (req.body.existing_photo_path ?? null),
+    ? `uploads/photos/${req.file.filename}`
+    : (req.body.existing_photo_path ?? null),
 
         updated_by: req.user?.id ?? null,
     };
