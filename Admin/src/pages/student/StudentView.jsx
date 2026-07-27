@@ -1,6 +1,6 @@
 import { X, User, Loader2 } from "lucide-react";
 
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = import.meta.env.VITE_API_URL.replace(/\/api\/v\d+\/?$/, "");
 const Field = ({ label, value }) => (
   <div>
     <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
@@ -31,10 +31,10 @@ const StudentView = ({ open, onClose, student, loading }) => {
             <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
               {student?.photo_path ? (
                 <img
-                  src={`${VITE_API_URL}/${student.photo_path}`}
-                  alt={fullName}
-                  className="h-full w-full object-cover"
-                />
+    src={`${API_BASE_URL}/${student.photo_path.replace(/\\/g, "/")}`}
+                            alt={fullName}
+                            className="h-full w-full object-cover"
+                          />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-slate-400">
                   <User size={22} />
