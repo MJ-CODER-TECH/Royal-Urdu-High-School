@@ -117,8 +117,7 @@ const REVERSE_FIELD_KEY_MAP = Object.entries(FIELD_KEY_MAP).reduce((acc, [camelK
 const camelToSnake = (str) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 const snakeToCamel = (str) => str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 
-const VITE_API_URL = "http://localhost:5000"; // TODO: move to import.meta.env.VITE_API_URL
-
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 // ---- Shared field styles ----
 const inputClass =
   "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
@@ -242,13 +241,15 @@ const StudentForm = ({ student, onClose }) => {
       isActive: student.status === "Active",
     });
 
-    if (student.photoUrl || student.photo_path) {
-      setPhotoPreview(
-        student.photoUrl ?? `${VITE_API_URL}/${student.photo_path.replace(/\\/g, "/")}`,
-      );
-    } else {
-      setPhotoPreview(null);
-    }
+   if (student.photoUrl) {
+  setPhotoPreview(student.photoUrl);
+} else if (student.photo_path) {
+  setPhotoPreview(
+    `${VITE_API_URL}/${student.photo_path.replace(/\\/g, "/")}`
+  );
+} else {
+  setPhotoPreview(null);
+}
 
     setPhotoFile(null);
   }, [student, classes, sections, reset]);

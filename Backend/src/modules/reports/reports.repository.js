@@ -4,7 +4,7 @@ const { PassThrough } = require("stream");
 const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require("fs");
-
+const BASE_URL = process.env.BASE_URL || "http://localhost:5000";
 
 
 /*
@@ -765,7 +765,7 @@ thead{
 
 
 <img
-src="http://localhost:5000/uploads/school/logo.png"
+src="${BASE_URL}/uploads/school/logo.png"
 class="logo"
 />
 
@@ -1844,7 +1844,7 @@ body{
 <div class="school-header">
 
 <img
-src="http://localhost:5000/uploads/school/logo.png"
+src="${BASE_URL}/uploads/school/logo.png"
 class="logo"
 />
 
@@ -3098,7 +3098,7 @@ body{
 
 
 <img
-src="http://localhost:5000/uploads/school/logo.png"
+src="${BASE_URL}/uploads/school/logo.png"
 class="logo"
 />
 
@@ -4303,7 +4303,7 @@ body{
 <div class="school-header">
 
 <img
-src="http://localhost:5000/uploads/school/logo.png"
+src="${BASE_URL}/uploads/school/logo.png"
 class="logo"
 />
 
@@ -5259,7 +5259,7 @@ body{
 <div class="school-header">
 
 <img
-src="http://localhost:5000/uploads/school/logo.png"
+src="${BASE_URL}/uploads/school/logo.png"
 class="logo"
 />
 
@@ -6390,7 +6390,7 @@ body{
 <div class="school-header">
 
 <img
-src="http://localhost:5000/uploads/school/logo.png"
+src="${BASE_URL}/uploads/school/logo.png"
 class="logo"
 />
 
