@@ -1,7 +1,6 @@
 import { X, User, Loader2 } from "lucide-react";
 
-const VITE_API_URL = "http://localhost:5000"; // TODO: move to import.meta.env.VITE_API_URL
-
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 const Field = ({ label, value }) => (
   <div>
     <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
