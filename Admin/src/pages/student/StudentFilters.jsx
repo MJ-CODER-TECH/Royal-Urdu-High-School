@@ -1,8 +1,7 @@
 import { Search, X, SlidersHorizontal } from "lucide-react";
 
 import ClassSectionFilter from "../../components/common/ClassSectionFilter";
-import AcademicYearFilter from "../../components/common/AcademicYearFilter";
-
+import AcademicYearFilter from "../../components/common/AcademicYearFilter.jsx";
 
 const selectClass =
 `
