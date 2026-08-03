@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+
 import {
   ClipboardList,
   Filter,
@@ -9,325 +10,2201 @@ import {
   UserX,
 } from "lucide-react";
 
-import { getClassesApi, getSectionsApi } from "../../api/master.api";
-import { getStudentsApi } from "../../api/student.api";
-import { getAttendanceApi } from "../../api/attendance.api";
-import { bulkAttendance } from "../../redux/attendance/attendanceThunk";
+import {
+  getClassesApi,
+  getSectionsApi,
+} from "../../api/master.api";
+
+import {
+  getStudentsApi,
+} from "../../api/student.api";
+
+import {
+  getAttendanceApi,
+} from "../../api/attendance.api";
+
+import {
+  bulkAttendance,
+} from "../../redux/attendance/attendanceThunk";
 
 import AttendanceRegisterTable from "./AttendanceRegisterTable";
 
-const todayDate = () => new Date().toISOString().split("T")[0];
+
+/* =====================================================
+   TODAY DATE
+===================================================== */
+
+const todayDate = () => {
+
+  return new Date()
+    .toISOString()
+    .split("T")[0];
+
+};
+
+
+/* =====================================================
+   COMPONENT
+===================================================== */
 
 const AttendanceRegisterPage = () => {
+
+
   const dispatch = useDispatch();
 
+
+  /* =====================================================
+     MASTER DATA
+  ===================================================== */
+
   const [classes, setClasses] = useState([]);
+
   const [sections, setSections] = useState([]);
 
+
+  /* =====================================================
+     FILTER VALUES
+  ===================================================== */
+
   const [classId, setClassId] = useState("");
+
   const [sectionId, setSectionId] = useState("");
-  const [attendanceDate, setAttendanceDate] = useState(todayDate());
+
+  const [attendanceDate, setAttendanceDate] =
+    useState(todayDate());
+
+
+  /* =====================================================
+     STUDENT ATTENDANCE DATA
+  ===================================================== */
 
   const [students, setStudents] = useState([]);
+
   const [statusMap, setStatusMap] = useState({});
+
   const [remarksMap, setRemarksMap] = useState({});
 
-  const [loadingStudents, setLoadingStudents] = useState(false);
-  const [saving, setSaving] = useState(false);
 
-  /* Load Masters (Classes & Sections) */
+  /* =====================================================
+     LOADING STATES
+  ===================================================== */
+
+  const [loadingStudents, setLoadingStudents] =
+    useState(false);
+
+  const [saving, setSaving] =
+    useState(false);
+
+
+  /* =====================================================
+     FILTER SECTIONS BY SELECTED CLASS
+  ===================================================== */
+
+  const filteredSections = useMemo(() => {
+
+
+    if (!classId) {
+
+      return [];
+
+    }
+
+
+    return sections.filter((section) => {
+
+
+      /*
+      Supports different backend field names:
+
+      section.class_id
+
+      section.classId
+
+      */
+
+
+      const sectionClassId =
+
+        section.class_id
+        ??
+        section.classId
+        ??
+        "";
+
+
+      return String(sectionClassId)
+        ===
+        String(classId);
+
+
+    });
+
+
+  }, [
+
+    sections,
+
+    classId,
+
+  ]);
+
+
+
+  /* =====================================================
+     LOAD CLASSES AND SECTIONS
+  ===================================================== */
+
   useEffect(() => {
+
+
     const loadMasters = async () => {
+
+
       try {
-        const [classList, sectionList] = await Promise.all([
+
+
+        const [
+
+          classResponse,
+
+          sectionResponse,
+
+        ] = await Promise.all([
+
           getClassesApi(),
+
           getSectionsApi(),
+
         ]);
-        setClasses(classList || []);
-        setSections(sectionList || []);
+
+
+        /*
+        Supports API response formats:
+
+        []
+
+        { data: [] }
+
+        { classes: [] }
+
+        { sections: [] }
+
+        */
+
+
+        const classList =
+
+          Array.isArray(classResponse)
+
+            ? classResponse
+
+            : (
+
+              classResponse?.data
+
+              ||
+
+              classResponse?.classes
+
+              ||
+
+              []
+
+            );
+
+
+        const sectionList =
+
+          Array.isArray(sectionResponse)
+
+            ? sectionResponse
+
+            : (
+
+              sectionResponse?.data
+
+              ||
+
+              sectionResponse?.sections
+
+              ||
+
+              []
+
+            );
+
+
+        setClasses(
+
+          classList
+
+        );
+
+
+        setSections(
+
+          sectionList
+
+        );
+
+
       } catch (error) {
-        console.error("Failed to load master data", error);
+
+
+        console.error(
+
+          "Failed to load master data:",
+
+          error
+
+        );
+
+
+        setClasses([]);
+
+        setSections([]);
+
+
       }
+
+
     };
+
+
     loadMasters();
+
+
   }, []);
 
-  /* Load Students & Existing Attendance */
+
+
+  /* =====================================================
+     LOAD STUDENTS + EXISTING ATTENDANCE
+  ===================================================== */
+
   useEffect(() => {
+
+
     const loadStudents = async () => {
-      if (!classId || !sectionId) {
+
+
+      /*
+      Class and Section are compulsory
+      */
+
+
+      if (
+
+        !classId
+
+        ||
+
+        !sectionId
+
+      ) {
+
+
         setStudents([]);
+
+
+        setStatusMap({});
+
+
+        setRemarksMap({});
+
+
         return;
+
+
       }
+
 
       setLoadingStudents(true);
 
+
       try {
-        const [studentsRes, attendanceRes] = await Promise.all([
+
+
+        const [
+
+          studentsResponse,
+
+          attendanceResponse,
+
+        ] = await Promise.all([
+
+
           getStudentsApi({
-            classId,
-            sectionId,
-            status: "Active",
-            page: 1,
-            limit: 500,
+
+
+            classId:
+
+              classId,
+
+
+            sectionId:
+
+              sectionId,
+
+
+            status:
+
+              "Active",
+
+
+            page:
+
+              1,
+
+
+            limit:
+
+              500,
+
+
           }),
+
+
           getAttendanceApi({
-            classId,
-            sectionId,
-            attendanceDate,
-            page: 1,
-            limit: 500,
+
+
+            classId:
+
+              classId,
+
+
+            sectionId:
+
+              sectionId,
+
+
+            attendanceDate:
+
+              attendanceDate,
+
+
+            page:
+
+              1,
+
+
+            limit:
+
+              500,
+
+
           }),
+
+
         ]);
 
-        const list = (studentsRes.students || studentsRes.data || [])
-          .slice()
-          .sort(
-            (a, b) =>
-              (Number(a.roll_no) || 0) - (Number(b.roll_no) || 0)
+
+        /*
+        Get students safely
+        */
+
+
+        const studentList =
+
+          studentsResponse?.students
+
+          ||
+
+          studentsResponse?.data
+
+          ||
+
+          studentsResponse?.data?.students
+
+          ||
+
+          [];
+
+
+        /*
+        Sort students by roll number
+        */
+
+
+        const sortedStudents =
+
+          Array.isArray(studentList)
+
+            ?
+
+            [...studentList].sort(
+
+              (firstStudent, secondStudent) => {
+
+
+                const firstRoll =
+
+                  Number(
+
+                    firstStudent.roll_no
+
+                  )
+
+                  ||
+
+                  0;
+
+
+                const secondRoll =
+
+                  Number(
+
+                    secondStudent.roll_no
+
+                  )
+
+                  ||
+
+                  0;
+
+
+                return (
+
+                  firstRoll
+
+                  -
+
+                  secondRoll
+
+                );
+
+
+              }
+
+            )
+
+            :
+
+            [];
+
+
+        setStudents(
+
+          sortedStudents
+
+        );
+
+
+        /*
+        Get existing attendance records safely
+        */
+
+
+        const existingRecords =
+
+          attendanceResponse?.data?.data
+
+          ||
+
+          attendanceResponse?.data?.attendance
+
+          ||
+
+          attendanceResponse?.data
+
+          ||
+
+          attendanceResponse?.attendance
+
+          ||
+
+          [];
+
+
+        /*
+        Create student attendance map
+        */
+
+
+        const existingAttendanceMap = {};
+
+
+        if (
+
+          Array.isArray(
+
+            existingRecords
+
+          )
+
+        ) {
+
+
+          existingRecords.forEach(
+
+            (record) => {
+
+
+              const studentId =
+
+                record.student_id
+
+                ??
+
+                record.studentId;
+
+
+              if (studentId) {
+
+
+                existingAttendanceMap[
+
+                  String(studentId)
+
+                ] = record;
+
+
+              }
+
+
+            }
+
           );
 
-        setStudents(list);
 
-        // Safely parse attendance response
-        const existingRecords =
-          attendanceRes?.data?.data || attendanceRes?.data || [];
-        const existingMap = {};
-        if (Array.isArray(existingRecords)) {
-          existingRecords.forEach((rec) => {
-            existingMap[rec.student_id] = rec;
-          });
         }
 
-        const defaultStatus = {};
-        const defaultRemarks = {};
 
-        list.forEach((s) => {
-          const existing = existingMap[s.student_id];
-          defaultStatus[s.student_id] = existing?.status || "Present";
-          defaultRemarks[s.student_id] = existing?.remarks || "";
-        });
+        /*
+        Default attendance values
+        */
 
-        setStatusMap(defaultStatus);
-        setRemarksMap(defaultRemarks);
+
+        const defaultStatusMap = {};
+
+
+        const defaultRemarksMap = {};
+
+
+        sortedStudents.forEach(
+
+          (student) => {
+
+
+            const studentId =
+
+              String(
+
+                student.student_id
+
+                ??
+
+                student.studentId
+
+              );
+
+
+            const existingRecord =
+
+              existingAttendanceMap[
+
+                studentId
+
+              ];
+
+
+            defaultStatusMap[
+
+              studentId
+
+            ] =
+
+              existingRecord?.status
+
+              ||
+
+              "Present";
+
+
+            defaultRemarksMap[
+
+              studentId
+
+            ] =
+
+              existingRecord?.remarks
+
+              ||
+
+              "";
+
+
+          }
+
+        );
+
+
+        setStatusMap(
+
+          defaultStatusMap
+
+        );
+
+
+        setRemarksMap(
+
+          defaultRemarksMap
+
+        );
+
+
       } catch (error) {
-        console.error("Failed to fetch students/attendance", error);
+
+
+        console.error(
+
+          "Failed to fetch students/attendance:",
+
+          error
+
+        );
+
+
         setStudents([]);
+
+
+        setStatusMap({});
+
+
+        setRemarksMap({});
+
+
       } finally {
-        setLoadingStudents(false);
+
+
+        setLoadingStudents(
+
+          false
+
+        );
+
+
       }
+
+
     };
+
 
     loadStudents();
-  }, [classId, sectionId, attendanceDate]);
 
-  const handleStatusChange = (studentId, status) => {
-    setStatusMap((prev) => ({
-      ...prev,
-      [studentId]: status,
-    }));
+
+  }, [
+
+    classId,
+
+    sectionId,
+
+    attendanceDate,
+
+  ]);
+
+
+
+  /* =====================================================
+     CHANGE SINGLE STUDENT STATUS
+  ===================================================== */
+
+  const handleStatusChange = (
+
+    studentId,
+
+    status
+
+  ) => {
+
+
+    setStatusMap(
+
+      (previous) => ({
+
+        ...previous,
+
+        [studentId]:
+
+          status,
+
+      })
+
+    );
+
+
   };
 
-  const handleRemarkChange = (studentId, remark) => {
-    setRemarksMap((prev) => ({
-      ...prev,
-      [studentId]: remark,
-    }));
+
+
+  /* =====================================================
+     CHANGE SINGLE STUDENT REMARK
+  ===================================================== */
+
+  const handleRemarkChange = (
+
+    studentId,
+
+    remark
+
+  ) => {
+
+
+    setRemarksMap(
+
+      (previous) => ({
+
+        ...previous,
+
+        [studentId]:
+
+          remark,
+
+      })
+
+    );
+
+
   };
 
-  const handleMarkAll = (status) => {
-    const updated = {};
-    students.forEach((s) => {
-      updated[s.student_id] = status;
-    });
-    setStatusMap(updated);
+
+
+  /* =====================================================
+     MARK ALL STUDENTS
+  ===================================================== */
+
+  const handleMarkAll = (
+
+    status
+
+  ) => {
+
+
+    const updatedStatusMap = {};
+
+
+    students.forEach(
+
+      (student) => {
+
+
+        const studentId =
+
+          student.student_id
+
+          ??
+
+          student.studentId;
+
+
+        updatedStatusMap[
+
+          studentId
+
+        ] = status;
+
+
+      }
+
+    );
+
+
+    setStatusMap(
+
+      updatedStatusMap
+
+    );
+
+
   };
+
+
+
+  /* =====================================================
+     SAVE BULK ATTENDANCE
+  ===================================================== */
 
   const handleSave = async () => {
-    if (!classId || !sectionId || !attendanceDate) {
-      alert("Please select Class, Section and Date.");
+
+
+    if (
+
+      !classId
+
+      ||
+
+      !sectionId
+
+      ||
+
+      !attendanceDate
+
+    ) {
+
+
+      alert(
+
+        "Please select Class, Section and Date."
+
+      );
+
+
       return;
+
+
     }
 
-    if (students.length === 0) {
-      alert("No active students found in this Class/Section.");
+
+    if (
+
+      students.length === 0
+
+    ) {
+
+
+      alert(
+
+        "No active students found in this Class and Section."
+
+      );
+
+
       return;
+
+
     }
+
 
     const payload = {
-      class_id: classId,
-      section_id: sectionId,
-      attendance_date: attendanceDate,
-      attendance: students.map((s) => ({
-        student_id: s.student_id,
-        status: statusMap[s.student_id] || "Present",
-        remarks: remarksMap[s.student_id] || null,
-      })),
+
+
+      class_id:
+
+        Number(classId),
+
+
+      section_id:
+
+        Number(sectionId),
+
+
+      attendance_date:
+
+        attendanceDate,
+
+
+      attendance:
+
+        students.map(
+
+          (student) => {
+
+
+            const studentId =
+
+              student.student_id
+
+              ??
+
+              student.studentId;
+
+
+            return {
+
+
+              student_id:
+
+                Number(studentId),
+
+
+              status:
+
+                statusMap[studentId]
+
+                ||
+
+                "Present",
+
+
+              remarks:
+
+                remarksMap[studentId]
+
+                ||
+
+                null,
+
+
+            };
+
+
+          }
+
+        ),
+
+
     };
 
-    setSaving(true);
+
+    setSaving(
+
+      true
+
+    );
+
 
     try {
-      await dispatch(bulkAttendance(payload)).unwrap();
-      alert("Bulk attendance saved successfully.");
+
+
+      await dispatch(
+
+        bulkAttendance(
+
+          payload
+
+        )
+
+      ).unwrap();
+
+
+      alert(
+
+        "Attendance saved successfully."
+
+      );
+
+
     } catch (error) {
-      alert(error || "Failed to save attendance.");
+
+
+      console.error(
+
+        "Attendance save error:",
+
+        error
+
+      );
+
+
+      alert(
+
+        typeof error === "string"
+
+          ?
+
+          error
+
+          :
+
+          "Failed to save attendance."
+
+      );
+
+
     } finally {
-      setSaving(false);
+
+
+      setSaving(
+
+        false
+
+      );
+
+
     }
+
+
   };
 
+
+
+  /* =====================================================
+     UI
+  ===================================================== */
+
   return (
+
+
     <div className="space-y-6">
-      {/* Top Header Bar */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+
+      {/* =================================================
+          PAGE HEADER
+      ================================================= */}
+
+
+      <div className="
+
+        flex
+
+        flex-col
+
+        gap-4
+
+        sm:flex-row
+
+        sm:items-center
+
+        sm:justify-between
+
+      ">
+
+
         <div>
-          <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-              <ClipboardList size={20} />
+
+
+          <div className="
+
+            flex
+
+            items-center
+
+            gap-2
+
+          ">
+
+
+            <div className="
+
+              flex
+
+              h-9
+
+              w-9
+
+              items-center
+
+              justify-center
+
+              rounded-lg
+
+              bg-indigo-50
+
+              text-indigo-600
+
+            ">
+
+
+              <ClipboardList
+
+                size={20}
+
+              />
+
+
             </div>
-            <h1 className="text-xl font-bold text-slate-800 sm:text-2xl">
+
+
+            <h1 className="
+
+              text-xl
+
+              font-bold
+
+              text-slate-800
+
+              sm:text-2xl
+
+            ">
+
+
               Attendance Register
+
+
             </h1>
+
+
           </div>
-          <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-            Bulk mark daily class attendance and submit logs in one click.
+
+
+          <p className="
+
+            mt-1
+
+            text-xs
+
+            text-slate-500
+
+            sm:text-sm
+
+          ">
+
+
+            Select Class and Section, then mark attendance for all students.
+
+
           </p>
+
+
         </div>
 
-        {/* Top Save Button */}
-        {students.length > 0 && (
-          <button
-            onClick={handleSave}
-            disabled={saving || loadingStudents}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {saving ? (
-              <>
-                <Loader2 size={18} className="animate-spin" />
-                Saving Register...
-              </>
-            ) : (
-              <>
-                <Save size={18} />
-                Save Attendance
-              </>
-            )}
-          </button>
-        )}
+
+
+        {
+
+          students.length > 0
+
+          &&
+
+          (
+
+
+            <button
+
+
+              type="button"
+
+
+              onClick={
+
+                handleSave
+
+              }
+
+
+              disabled={
+
+                saving
+
+                ||
+
+                loadingStudents
+
+              }
+
+
+              className="
+
+                inline-flex
+
+                items-center
+
+                justify-center
+
+                gap-2
+
+                rounded-lg
+
+                bg-indigo-600
+
+                px-5
+
+                py-2.5
+
+                text-sm
+
+                font-medium
+
+                text-white
+
+                shadow-sm
+
+                transition-all
+
+                hover:bg-indigo-700
+
+                disabled:cursor-not-allowed
+
+                disabled:opacity-60
+
+              "
+
+
+            >
+
+
+              {
+
+                saving
+
+                ?
+
+                <>
+
+
+                  <Loader2
+
+                    size={18}
+
+                    className="animate-spin"
+
+                  />
+
+
+                  Saving...
+
+
+                </>
+
+
+                :
+
+                <>
+
+
+                  <Save
+
+                    size={18}
+
+                  />
+
+
+                  Save Attendance
+
+
+                </>
+
+              }
+
+
+            </button>
+
+
+          )
+
+        }
+
+
       </div>
 
-      {/* Criteria Filters Panel */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-          <Filter size={14} />
+
+
+      {/* =================================================
+          CLASS / SECTION / DATE FILTER
+      ================================================= */}
+
+
+      <div className="
+
+        rounded-xl
+
+        border
+
+        border-slate-200
+
+        bg-white
+
+        p-5
+
+        shadow-sm
+
+      ">
+
+
+        <div className="
+
+          mb-4
+
+          flex
+
+          items-center
+
+          gap-2
+
+          text-xs
+
+          font-semibold
+
+          uppercase
+
+          tracking-wider
+
+          text-slate-500
+
+        ">
+
+
+          <Filter
+
+            size={14}
+
+          />
+
+
           Select Register Criteria
+
+
         </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {/* Class Selector */}
+
+
+        <div className="
+
+          grid
+
+          grid-cols-1
+
+          gap-4
+
+          md:grid-cols-3
+
+        ">
+
+
+          {/* CLASS */}
+
+
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Class <span className="text-red-500">*</span>
+
+
+            <label className="
+
+              mb-1
+
+              block
+
+              text-xs
+
+              font-medium
+
+              text-slate-600
+
+            ">
+
+
+              Class
+
+              <span className="
+
+                ml-1
+
+                text-red-500
+
+              ">
+
+                *
+
+              </span>
+
+
             </label>
+
+
             <select
-              value={classId}
-              onChange={(e) => {
-                setClassId(e.target.value);
-                setSectionId("");
+
+
+              value={
+
+                classId
+
+              }
+
+
+              onChange={(event) => {
+
+
+                const selectedClassId =
+
+                  event.target.value;
+
+
+                setClassId(
+
+                  selectedClassId
+
+                );
+
+
+                /*
+                Reset section when class changes
+                */
+
+
+                setSectionId(
+
+                  ""
+
+                );
+
+
+                /*
+                Clear old student data
+                */
+
+
+                setStudents(
+
+                  []
+
+                );
+
+
+                setStatusMap(
+
+                  {}
+
+                );
+
+
+                setRemarksMap(
+
+                  {}
+
+                );
+
+
               }}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+
+
+              className="
+
+                w-full
+
+                rounded-lg
+
+                border
+
+                border-slate-200
+
+                bg-white
+
+                px-3
+
+                py-2
+
+                text-sm
+
+                text-slate-800
+
+                outline-none
+
+                transition-all
+
+                focus:border-indigo-500
+
+                focus:ring-1
+
+                focus:ring-indigo-500
+
+              "
+
+
             >
-              <option value="">-- Select Class --</option>
-              {classes.map((item) => (
-                <option key={item.class_id} value={item.class_id}>
-                  {item.class_name}
-                </option>
-              ))}
+
+
+              <option value="">
+
+
+                -- Select Class --
+
+
+              </option>
+
+
+              {
+
+                classes.map(
+
+                  (item) => (
+
+
+                    <option
+
+                      key={
+
+                        item.class_id
+
+                      }
+
+
+                      value={
+
+                        item.class_id
+
+                      }
+
+                    >
+
+
+                      {
+
+                        item.class_name
+
+                      }
+
+
+                    </option>
+
+
+                  )
+
+                )
+
+              }
+
+
             </select>
+
+
           </div>
 
-          {/* Section Selector */}
+
+
+          {/* SECTION */}
+
+
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Section <span className="text-red-500">*</span>
+
+
+            <label className="
+
+              mb-1
+
+              block
+
+              text-xs
+
+              font-medium
+
+              text-slate-600
+
+            ">
+
+
+              Section
+
+              <span className="
+
+                ml-1
+
+                text-red-500
+
+              ">
+
+                *
+
+              </span>
+
+
             </label>
+
+
             <select
-              value={sectionId}
-              onChange={(e) => setSectionId(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+
+
+              value={
+
+                sectionId
+
+              }
+
+
+              onChange={(event) => {
+
+
+                setSectionId(
+
+                  event.target.value
+
+                );
+
+
+              }}
+
+
+              disabled={
+
+                !classId
+
+              }
+
+
+              className="
+
+                w-full
+
+                rounded-lg
+
+                border
+
+                border-slate-200
+
+                bg-white
+
+                px-3
+
+                py-2
+
+                text-sm
+
+                text-slate-800
+
+                outline-none
+
+                transition-all
+
+                focus:border-indigo-500
+
+                focus:ring-1
+
+                focus:ring-indigo-500
+
+                disabled:cursor-not-allowed
+
+                disabled:bg-slate-100
+
+                disabled:text-slate-400
+
+              "
+
+
             >
-              <option value="">-- Select Section --</option>
-              {sections.map((section) => (
-                <option key={section.section_id} value={section.section_id}>
-                  {section.class_name ? `${section.class_name} - ` : ""}
-                  {section.section_name}
-                </option>
-              ))}
+
+
+              <option value="">
+
+
+                {
+
+                  classId
+
+                  ?
+
+                  "-- Select Section --"
+
+                  :
+
+                  "Select Class First"
+
+                }
+
+
+              </option>
+
+
+              {
+
+                filteredSections.map(
+
+                  (section) => (
+
+
+                    <option
+
+                      key={
+
+                        section.section_id
+
+                      }
+
+
+                      value={
+
+                        section.section_id
+
+                      }
+
+                    >
+
+
+                      {
+
+                        section.section_name
+
+                      }
+
+
+                    </option>
+
+
+                  )
+
+                )
+
+              }
+
+
             </select>
+
+
+            {
+
+              classId
+
+              &&
+
+              filteredSections.length === 0
+
+              &&
+
+              (
+
+
+                <p className="
+
+                  mt-1
+
+                  text-xs
+
+                  text-amber-600
+
+                ">
+
+
+                  No section found for this class.
+
+
+                </p>
+
+
+              )
+
+            }
+
+
           </div>
 
-          {/* Date Selector */}
+
+
+          {/* DATE */}
+
+
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-600">
-              Date <span className="text-red-500">*</span>
+
+
+            <label className="
+
+              mb-1
+
+              block
+
+              text-xs
+
+              font-medium
+
+              text-slate-600
+
+            ">
+
+
+              Date
+
+              <span className="
+
+                ml-1
+
+                text-red-500
+
+              ">
+
+                *
+
+              </span>
+
+
             </label>
+
+
             <input
+
+
               type="date"
-              value={attendanceDate}
-              onChange={(e) => setAttendanceDate(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+
+
+              value={
+
+                attendanceDate
+
+              }
+
+
+              onChange={(event) => {
+
+
+                setAttendanceDate(
+
+                  event.target.value
+
+                );
+
+
+              }}
+
+
+              className="
+
+                w-full
+
+                rounded-lg
+
+                border
+
+                border-slate-200
+
+                bg-white
+
+                px-3
+
+                py-2
+
+                text-sm
+
+                text-slate-800
+
+                outline-none
+
+                transition-all
+
+                focus:border-indigo-500
+
+                focus:ring-1
+
+                focus:ring-indigo-500
+
+              "
+
+
             />
+
+
           </div>
+
+
         </div>
+
+
       </div>
 
-      {/* Quick Actions Bar */}
-      {students.length > 0 && !loadingStudents && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3">
-          <div className="text-xs font-medium text-slate-600">
-            Total Active Students:{" "}
-            <span className="font-bold text-slate-800">{students.length}</span>
+
+
+      {/* =================================================
+          QUICK ACTIONS
+      ================================================= */}
+
+
+      {
+
+        students.length > 0
+
+        &&
+
+        !loadingStudents
+
+        &&
+
+        (
+
+
+          <div className="
+
+            flex
+
+            flex-wrap
+
+            items-center
+
+            justify-between
+
+            gap-3
+
+            rounded-xl
+
+            border
+
+            border-slate-200
+
+            bg-slate-50
+
+            px-5
+
+            py-3
+
+          ">
+
+
+            <div className="
+
+              text-xs
+
+              font-medium
+
+              text-slate-600
+
+            ">
+
+
+              Total Active Students:
+
+
+              <span className="
+
+                ml-1
+
+                font-bold
+
+                text-slate-800
+
+              ">
+
+
+                {
+
+                  students.length
+
+                }
+
+
+              </span>
+
+
+            </div>
+
+
+            <div className="
+
+              flex
+
+              flex-wrap
+
+              items-center
+
+              gap-2
+
+            ">
+
+
+              <span className="
+
+                text-xs
+
+                font-semibold
+
+                text-slate-500
+
+              ">
+
+
+                Quick Mark All:
+
+
+              </span>
+
+
+              <button
+
+
+                type="button"
+
+
+                onClick={() => {
+
+
+                  handleMarkAll(
+
+                    "Present"
+
+                  );
+
+
+                }}
+
+
+                className="
+
+                  inline-flex
+
+                  items-center
+
+                  gap-1
+
+                  rounded-lg
+
+                  border
+
+                  border-emerald-200
+
+                  bg-emerald-50
+
+                  px-3
+
+                  py-1.5
+
+                  text-xs
+
+                  font-medium
+
+                  text-emerald-700
+
+                  hover:bg-emerald-100
+
+                "
+
+
+              >
+
+
+                <UserCheck
+
+                  size={14}
+
+                />
+
+
+                All Present
+
+
+              </button>
+
+
+              <button
+
+
+                type="button"
+
+
+                onClick={() => {
+
+
+                  handleMarkAll(
+
+                    "Absent"
+
+                  );
+
+
+                }}
+
+
+                className="
+
+                  inline-flex
+
+                  items-center
+
+                  gap-1
+
+                  rounded-lg
+
+                  border
+
+                  border-rose-200
+
+                  bg-rose-50
+
+                  px-3
+
+                  py-1.5
+
+                  text-xs
+
+                  font-medium
+
+                  text-rose-700
+
+                  hover:bg-rose-100
+
+                "
+
+
+              >
+
+
+                <UserX
+
+                  size={14}
+
+                />
+
+
+                All Absent
+
+
+              </button>
+
+
+            </div>
+
+
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500">
-              Quick Mark All:
-            </span>
-            <button
-              type="button"
-              onClick={() => handleMarkAll("Present")}
-              className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100"
-            >
-              <UserCheck size={14} />
-              All Present
-            </button>
-            <button
-              type="button"
-              onClick={() => handleMarkAll("Absent")}
-              className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition-colors hover:bg-rose-100"
-            >
-              <UserX size={14} />
-              All Absent
-            </button>
-          </div>
-        </div>
-      )}
 
-      {/* Attendance Register Table Component */}
+        )
+
+      }
+
+
+
+      {/* =================================================
+          ATTENDANCE TABLE
+      ================================================= */}
+
+
       <AttendanceRegisterTable
-        students={students}
-        loading={loadingStudents}
-        statusMap={statusMap}
-        remarksMap={remarksMap}
-        onStatusChange={handleStatusChange}
-        onRemarkChange={handleRemarkChange}
-        onMarkAll={handleMarkAll}
-        onSave={handleSave}
-        saving={saving}
+
+
+        students={
+
+          students
+
+        }
+
+
+        loading={
+
+          loadingStudents
+
+        }
+
+
+        statusMap={
+
+          statusMap
+
+        }
+
+
+        remarksMap={
+
+          remarksMap
+
+        }
+
+
+        onStatusChange={
+
+          handleStatusChange
+
+        }
+
+
+        onRemarkChange={
+
+          handleRemarkChange
+
+        }
+
+
+        onMarkAll={
+
+          handleMarkAll
+
+        }
+
+
+        onSave={
+
+          handleSave
+
+        }
+
+
+        saving={
+
+          saving
+
+        }
+
+
       />
+
+
     </div>
+
+
   );
+
+
 };
+
 
 export default AttendanceRegisterPage;

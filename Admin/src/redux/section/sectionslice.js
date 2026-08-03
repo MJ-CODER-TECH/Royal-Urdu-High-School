@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import {
     fetchSections,
+    fetchSectionsByClass,
     getSections,
     getSectionById,
     createSection,
@@ -13,10 +14,10 @@ import {
 
 const initialState = {
 
-    // Dropdown ke liye
+    // Dropdown sections
     sections: [],
 
-    // Table list ke liye
+    // Management list
     sectionList: [],
 
     selectedSection: null,
@@ -30,6 +31,7 @@ const initialState = {
 };
 
 
+
 const sectionSlice = createSlice({
 
     name: "section",
@@ -39,16 +41,23 @@ const sectionSlice = createSlice({
 
     reducers: {
 
-        clearSelectedSection: (state) => {
+        clearSelectedSection:(state)=>{
 
             state.selectedSection = null;
 
         },
 
+
+        clearSections:(state)=>{
+
+            state.sections = [];
+
+        }
+
     },
 
 
-    extraReducers: (builder) => {
+    extraReducers:(builder)=>{
 
 
         builder
@@ -56,31 +65,33 @@ const sectionSlice = createSlice({
 
         /*
         |--------------------------------------------------------------------------
-        | Dropdown Sections
+        | Dropdown All Sections
         |--------------------------------------------------------------------------
         */
 
-        .addCase(fetchSections.pending, (state) => {
+        .addCase(fetchSections.pending,(state)=>{
 
             state.loading = true;
 
         })
 
 
-        .addCase(fetchSections.fulfilled, (state, action) => {
+        .addCase(fetchSections.fulfilled,(state,action)=>{
 
             state.loading = false;
 
-            state.sections = action.payload || [];
+            state.sections =
+                action.payload || [];
 
         })
 
 
-        .addCase(fetchSections.rejected, (state, action) => {
+        .addCase(fetchSections.rejected,(state,action)=>{
 
             state.loading = false;
 
-            state.error = action.payload;
+            state.error =
+                action.payload;
 
         })
 
@@ -88,31 +99,78 @@ const sectionSlice = createSlice({
 
         /*
         |--------------------------------------------------------------------------
-        | Section List
+        | Dropdown Sections By Class
         |--------------------------------------------------------------------------
         */
 
-        .addCase(getSections.pending, (state) => {
+        .addCase(
+            fetchSectionsByClass.pending,
+            (state)=>{
+
+                state.loading = true;
+
+            }
+        )
+
+
+        .addCase(
+            fetchSectionsByClass.fulfilled,
+            (state,action)=>{
+
+                state.loading = false;
+
+                state.sections =
+                    action.payload || [];
+
+            }
+        )
+
+
+        .addCase(
+            fetchSectionsByClass.rejected,
+            (state,action)=>{
+
+                state.loading = false;
+
+                state.sections = [];
+
+                state.error =
+                    action.payload;
+
+            }
+        )
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Section Management List
+        |--------------------------------------------------------------------------
+        */
+
+        .addCase(getSections.pending,(state)=>{
 
             state.loading = true;
 
         })
 
 
-        .addCase(getSections.fulfilled, (state, action) => {
+        .addCase(getSections.fulfilled,(state,action)=>{
 
             state.loading = false;
 
-            state.sectionList = action.payload || [];
+            state.sectionList =
+                action.payload || [];
 
         })
 
 
-        .addCase(getSections.rejected, (state, action) => {
+        .addCase(getSections.rejected,(state,action)=>{
 
             state.loading = false;
 
-            state.error = action.payload;
+            state.error =
+                action.payload;
 
         })
 
@@ -120,15 +178,19 @@ const sectionSlice = createSlice({
 
         /*
         |--------------------------------------------------------------------------
-        | Get By ID
+        | Get Section By Id
         |--------------------------------------------------------------------------
         */
 
-        .addCase(getSectionById.fulfilled, (state, action) => {
+        .addCase(
+            getSectionById.fulfilled,
+            (state,action)=>{
 
-            state.selectedSection = action.payload;
+                state.selectedSection =
+                    action.payload;
 
-        })
+            }
+        )
 
 
 
@@ -138,25 +200,26 @@ const sectionSlice = createSlice({
         |--------------------------------------------------------------------------
         */
 
-        .addCase(createSection.pending, (state) => {
+        .addCase(createSection.pending,(state)=>{
 
             state.submitting = true;
 
         })
 
 
-        .addCase(createSection.fulfilled, (state) => {
+        .addCase(createSection.fulfilled,(state)=>{
 
             state.submitting = false;
 
         })
 
 
-        .addCase(createSection.rejected, (state, action) => {
+        .addCase(createSection.rejected,(state,action)=>{
 
             state.submitting = false;
 
-            state.error = action.payload;
+            state.error =
+                action.payload;
 
         })
 
@@ -168,25 +231,26 @@ const sectionSlice = createSlice({
         |--------------------------------------------------------------------------
         */
 
-        .addCase(updateSection.pending, (state) => {
+        .addCase(updateSection.pending,(state)=>{
 
             state.submitting = true;
 
         })
 
 
-        .addCase(updateSection.fulfilled, (state) => {
+        .addCase(updateSection.fulfilled,(state)=>{
 
             state.submitting = false;
 
         })
 
 
-        .addCase(updateSection.rejected, (state, action) => {
+        .addCase(updateSection.rejected,(state,action)=>{
 
             state.submitting = false;
 
-            state.error = action.payload;
+            state.error =
+                action.payload;
 
         })
 
@@ -198,12 +262,12 @@ const sectionSlice = createSlice({
         |--------------------------------------------------------------------------
         */
 
-        .addCase(deleteSection.fulfilled, (state, action) => {
+        .addCase(deleteSection.fulfilled,(state,action)=>{
 
             state.sectionList =
                 state.sectionList.filter(
                     item =>
-                        item.section_id !== action.payload
+                    item.section_id !== action.payload
                 );
 
         })
@@ -212,38 +276,43 @@ const sectionSlice = createSlice({
 
         /*
         |--------------------------------------------------------------------------
-        | Status
+        | Status Update
         |--------------------------------------------------------------------------
         */
 
-        .addCase(changeSectionStatus.fulfilled, (state, action) => {
+        .addCase(
+            changeSectionStatus.fulfilled,
+            (state,action)=>{
 
 
-            const item =
-                state.sectionList.find(
-                    x =>
-                    x.section_id === action.payload.id
-                );
+                const item =
+                    state.sectionList.find(
+                        x =>
+                        x.section_id === action.payload.id
+                    );
 
 
-            if(item){
+                if(item){
 
-                item.is_active =
-                    action.payload.is_active;
+                    item.is_active =
+                        action.payload.is_active;
+
+                }
+
 
             }
-
-
-        });
+        );
 
 
     },
+
 
 });
 
 
 export const {
     clearSelectedSection,
+    clearSections,
 } = sectionSlice.actions;
 
 

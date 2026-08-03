@@ -201,3 +201,11 @@ exports.getAllSubjects = async()=>{
     return await masterRepository.getAllSubjects();
 
 };
+
+
+
+exports.getSectionsByClassId = async (class_id)=>{
+
+    return await masterRepository.getSectionsByClassId(class_id);
+
+};

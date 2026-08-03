@@ -5,8 +5,6 @@ import {
     setSubmitting,
     setCertificates,
     setCertificate,
-    addCertificate,
-    updateCertificateSuccess,
     removeCertificate,
     setError,
 } from "./certificateSlice";
@@ -21,7 +19,9 @@ import {
     generateTcPdfApi,
     generateLcPdfApi,
     generateCharacterPdfApi,
+    downloadCertificatePdfApi,
 } from "../../api/certificate.api";
+
 
 /* ==========================================================
    Get Certificates
@@ -30,289 +30,586 @@ import {
 export const getCertificates =
     (params = {}) =>
     async (dispatch) => {
+
         try {
-            dispatch(setLoading(true));
 
-            const { data } = await getCertificatesApi(params);
-
-            dispatch(setCertificates(data));
-        } catch (error) {
             dispatch(
-                setError(
-                    error.response?.data?.message ||
-                        "Failed to load certificates."
-                )
+                setLoading(true)
+            );
+
+            const response =
+                await getCertificatesApi(
+                    params
+                );
+
+            const data =
+                response?.data ??
+                response;
+
+            dispatch(
+                setCertificates(data)
+            );
+
+            return data;
+
+        } catch (error) {
+
+            const message =
+                error.response?.data?.message ||
+                "Failed to load certificates.";
+
+            dispatch(
+                setError(message)
             );
 
             toast.error(
-                error.response?.data?.message ||
-                    "Failed to load certificates."
+                message
             );
+
+            return false;
+
         } finally {
-            dispatch(setLoading(false));
+
+            dispatch(
+                setLoading(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Get Certificate
+   Get Certificate By ID
 ========================================================== */
 
 export const getCertificate =
     (id) =>
     async (dispatch) => {
+
         try {
-            dispatch(setLoading(true));
 
-            const { data } = await getCertificateByIdApi(id);
+            dispatch(
+                setLoading(true)
+            );
 
-            dispatch(setCertificate(data));
+            const response =
+                await getCertificateByIdApi(
+                    id
+                );
+
+            const data =
+                response?.data ??
+                response;
+
+            dispatch(
+                setCertificate(data)
+            );
+
+            return data;
+
         } catch (error) {
+
             toast.error(
                 error.response?.data?.message ||
-                    "Failed to load certificate."
+                "Failed to load certificate."
             );
+
+            return false;
+
         } finally {
-            dispatch(setLoading(false));
+
+            dispatch(
+                setLoading(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Create
+   Create Certificate
 ========================================================== */
 
 export const createCertificate =
     (payload) =>
     async (dispatch, getState) => {
+
         try {
-            dispatch(setSubmitting(true));
 
-            const { data } = await createCertificateApi(payload);
-
-            toast.success(
-                data.message || "Certificate created successfully."
+            dispatch(
+                setSubmitting(true)
             );
 
-            // list ko fresh refetch karo taaki poora joined data mile
-            const { page, limit } = getState().certificate;
-            dispatch(getCertificates({ page, limit }));
+            const response =
+                await createCertificateApi(
+                    payload
+                );
+
+            toast.success(
+                response?.data?.message ||
+                "Certificate created successfully."
+            );
+
+            const {
+                page,
+                limit,
+            } =
+                getState().certificate;
+
+            dispatch(
+                getCertificates({
+                    page,
+                    limit,
+                })
+            );
 
             return true;
+
         } catch (error) {
+
             toast.error(
                 error.response?.data?.message ||
-                    "Failed to create certificate."
+                "Failed to create certificate."
             );
 
             return false;
+
         } finally {
-            dispatch(setSubmitting(false));
+
+            dispatch(
+                setSubmitting(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Update
+   Update Certificate
 ========================================================== */
 
 export const updateCertificate =
     ({ id, data }) =>
     async (dispatch, getState) => {
+
         try {
-            dispatch(setSubmitting(true));
 
-            const response = await updateCertificateApi(id, data);
-
-            toast.success(
-                response.data.message || "Certificate updated successfully."
+            dispatch(
+                setSubmitting(true)
             );
 
-            const { page, limit } = getState().certificate;
-            dispatch(getCertificates({ page, limit }));
+            const response =
+                await updateCertificateApi(
+                    id,
+                    data
+                );
+
+            toast.success(
+                response?.data?.message ||
+                "Certificate updated successfully."
+            );
+
+            const {
+                page,
+                limit,
+            } =
+                getState().certificate;
+
+            dispatch(
+                getCertificates({
+                    page,
+                    limit,
+                })
+            );
 
             return true;
+
         } catch (error) {
+
             toast.error(
                 error.response?.data?.message ||
-                    "Failed to update certificate."
+                "Failed to update certificate."
             );
 
             return false;
+
         } finally {
-            dispatch(setSubmitting(false));
+
+            dispatch(
+                setSubmitting(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Delete
+   Delete Certificate
 ========================================================== */
 
 export const deleteCertificate =
     (id) =>
     async (dispatch) => {
+
         try {
-            await deleteCertificateApi(id);
 
-            dispatch(removeCertificate(id));
+            await deleteCertificateApi(
+                id
+            );
 
-            toast.success("Certificate deleted.");
+            dispatch(
+                removeCertificate(id)
+            );
+
+            toast.success(
+                "Certificate deleted."
+            );
+
+            return true;
+
         } catch (error) {
+
             toast.error(
                 error.response?.data?.message ||
-                    "Delete failed."
+                "Delete failed."
             );
+
+            return false;
+
         }
+
     };
 
+
 /* ==========================================================
-   Download Helper
+   Download Blob Helper
 ========================================================== */
 
-const downloadBlob = (blob, filename) => {
-    const url = window.URL.createObjectURL(blob);
+const downloadBlob =
+    (blob, filename) => {
 
-    const a = document.createElement("a");
+        const url =
+            window.URL.createObjectURL(
+                blob
+            );
 
-    a.href = url;
+        const link =
+            document.createElement(
+                "a"
+            );
 
-    a.download = filename;
+        link.href =
+            url;
 
-    document.body.appendChild(a);
+        link.download =
+            filename;
 
-    a.click();
+        document.body.appendChild(
+            link
+        );
 
-    a.remove();
+        link.click();
 
-    window.URL.revokeObjectURL(url);
-};
+        link.remove();
+
+        window.URL.revokeObjectURL(
+            url
+        );
+
+    };
+
 
 /* ==========================================================
-   Bonafide PDF
+   Generate Bonafide
 ========================================================== */
 
 export const generateBonafide =
-    (studentId) =>
+    (studentId, payload = {}) =>
     async (dispatch, getState) => {
+
         try {
-            const { data } =
-                await generateBonafidePdfApi(studentId);
+
+            dispatch(
+                setSubmitting(true)
+            );
+
+            const response =
+                await generateBonafidePdfApi(
+                    studentId,
+                    payload
+                );
 
             downloadBlob(
-                data,
+                response.data,
                 `Bonafide_${studentId}.pdf`
             );
 
-            toast.success("Bonafide generated.");
+            toast.success(
+                "Bonafide generated successfully."
+            );
 
-            const { page, limit } = getState().certificate;
-            dispatch(getCertificates({ page, limit }));
+            const {
+                page,
+                limit,
+            } =
+                getState().certificate;
+
+            dispatch(
+                getCertificates({
+                    page,
+                    limit,
+                })
+            );
+
+            return true;
+
         } catch (error) {
-            toast.error("Failed to generate Bonafide.");
+
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to generate Bonafide."
+            );
+
+            return false;
+
+        } finally {
+
+            dispatch(
+                setSubmitting(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Transfer Certificate
+   Generate Transfer Certificate
 ========================================================== */
 
 export const generateTC =
-    (studentId, payload) =>
+    (studentId, payload = {}) =>
     async (dispatch, getState) => {
+
         try {
-            const { data } =
+
+            dispatch(
+                setSubmitting(true)
+            );
+
+            const response =
                 await generateTcPdfApi(
                     studentId,
                     payload
                 );
 
             downloadBlob(
-                data,
+                response.data,
                 `Transfer_Certificate_${studentId}.pdf`
             );
 
-            toast.success("Transfer Certificate generated.");
+            toast.success(
+                "Transfer Certificate generated successfully."
+            );
 
-            const { page, limit } = getState().certificate;
-            dispatch(getCertificates({ page, limit }));
+            const {
+                page,
+                limit,
+            } =
+                getState().certificate;
+
+            dispatch(
+                getCertificates({
+                    page,
+                    limit,
+                })
+            );
+
+            return true;
+
         } catch (error) {
+
             toast.error(
+                error.response?.data?.message ||
                 "Failed to generate Transfer Certificate."
             );
+
+            return false;
+
+        } finally {
+
+            dispatch(
+                setSubmitting(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Leaving Certificate
+   Generate Leaving Certificate
 ========================================================== */
 
 export const generateLC =
-    (studentId, payload) =>
+    (studentId, payload = {}) =>
     async (dispatch, getState) => {
+
         try {
-            const { data } =
+
+            dispatch(
+                setSubmitting(true)
+            );
+
+            const response =
                 await generateLcPdfApi(
                     studentId,
                     payload
                 );
 
             downloadBlob(
-                data,
+                response.data,
                 `Leaving_Certificate_${studentId}.pdf`
             );
 
-            toast.success("Leaving Certificate generated.");
+            toast.success(
+                "Leaving Certificate generated successfully."
+            );
 
-            const { page, limit } = getState().certificate;
-            dispatch(getCertificates({ page, limit }));
+            const {
+                page,
+                limit,
+            } =
+                getState().certificate;
+
+            dispatch(
+                getCertificates({
+                    page,
+                    limit,
+                })
+            );
+
+            return true;
+
         } catch (error) {
+
             toast.error(
+                error.response?.data?.message ||
                 "Failed to generate Leaving Certificate."
             );
+
+            return false;
+
+        } finally {
+
+            dispatch(
+                setSubmitting(false)
+            );
+
         }
+
     };
 
+
 /* ==========================================================
-   Character Certificate
+   Generate Character Certificate
 ========================================================== */
 
 export const generateCharacter =
-    (studentId, payload) =>
+    (studentId, payload = {}) =>
     async (dispatch, getState) => {
+
         try {
-            const { data } =
+
+            dispatch(
+                setSubmitting(true)
+            );
+
+            const response =
                 await generateCharacterPdfApi(
                     studentId,
                     payload
                 );
 
             downloadBlob(
-                data,
+                response.data,
                 `Character_Certificate_${studentId}.pdf`
             );
 
             toast.success(
-                "Character Certificate generated."
+                "Character Certificate generated successfully."
             );
 
-            const { page, limit } = getState().certificate;
-            dispatch(getCertificates({ page, limit }));
+            const {
+                page,
+                limit,
+            } =
+                getState().certificate;
+
+            dispatch(
+                getCertificates({
+                    page,
+                    limit,
+                })
+            );
+
+            return true;
+
         } catch (error) {
+
             toast.error(
+                error.response?.data?.message ||
                 "Failed to generate Character Certificate."
             );
+
+            return false;
+
+        } finally {
+
+            dispatch(
+                setSubmitting(false)
+            );
+
         }
+
     };
 
 
-    export const downloadCertificate =
+/* ==========================================================
+   Download Existing Certificate
+========================================================== */
+
+export const downloadCertificate =
     (id, certificateNo) =>
     async () => {
-        try {
-            const { data } = await downloadCertificatePdfApi(id);
 
-            downloadBlob(data, `${certificateNo || id}.pdf`);
+        try {
+
+            const response =
+                await downloadCertificatePdfApi(
+                    id
+                );
+
+            downloadBlob(
+                response.data,
+                `${certificateNo || id}.pdf`
+            );
+
+            return true;
+
         } catch (error) {
+
             toast.error(
                 error.response?.data?.message ||
-                    "PDF not available. Please generate it first."
+                "PDF not available. Please generate it first."
             );
+
+            return false;
+
         }
+
     };

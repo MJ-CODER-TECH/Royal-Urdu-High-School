@@ -199,7 +199,6 @@ exports.deleteMark = async (markId) => {
 
 
 
-
 /*
 |--------------------------------------------------------------------------
 | CHECK EXISTING MARK
@@ -208,26 +207,29 @@ exports.deleteMark = async (markId) => {
 
 exports.checkExistingMark = async (
     student_id,
+    academic_year_id,
+    class_id,
+    section_id,
     exam_id,
     subject_id
 ) => {
-
 
     const [rows] = await db.query(
         query.CHECK_EXIST,
         [
             student_id,
+            academic_year_id,
+            class_id,
+            section_id,
             exam_id,
-            subject_id
+            subject_id,
         ]
     );
 
-
-    return rows.length ? rows[0] : null;
-
+    return rows.length
+        ? rows[0]
+        : null;
 };
-
-
 
 
 /*
@@ -247,8 +249,16 @@ exports.getStudentsForMarks = async (
     const [rows] = await db.query(
         query.GET_STUDENTS_FOR_MARKS,
         [
+            // LEFT JOIN marks
+
+            academic_year_id,
+            class_id,
+            section_id,
             exam_id,
             subject_id,
+
+            // WHERE student
+
             academic_year_id,
             class_id,
             section_id
@@ -256,4 +266,5 @@ exports.getStudentsForMarks = async (
     );
 
     return rows;
+
 };

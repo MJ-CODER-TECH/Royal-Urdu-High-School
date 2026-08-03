@@ -1,23 +1,63 @@
 const pool = require("../../config/database");
 
+
+/*
+|--------------------------------------------------------------------------
+| Helper
+|--------------------------------------------------------------------------
+*/
+
+const nullIfEmpty = (value) => {
+
+    if (
+        value === undefined ||
+        value === null ||
+        value === ""
+    ) {
+        return null;
+    }
+
+    return value;
+
+};
+
+
 /*
 |--------------------------------------------------------------------------
 | Find Student By Admission Number
 |--------------------------------------------------------------------------
 */
 
-exports.findByAdmissionNo = async (admissionNo) => {
-  const sql = `
+exports.findByAdmissionNo = async (
+    admissionNo
+) => {
+
+    const sql = `
+
         SELECT student_id
+
         FROM student
+
         WHERE admission_no = ?
+
         LIMIT 1
+
     `;
 
-  const [rows] = await pool.execute(sql, [admissionNo]);
 
-  return rows;
+    const [rows] = await pool.execute(
+
+        sql,
+
+        [admissionNo]
+
+    );
+
+
+    return rows;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -25,18 +65,36 @@ exports.findByAdmissionNo = async (admissionNo) => {
 |--------------------------------------------------------------------------
 */
 
-exports.findByGrNo = async (grNo) => {
-  const sql = `
+exports.findByGrNo = async (
+    grNo
+) => {
+
+    const sql = `
+
         SELECT student_id
+
         FROM student
+
         WHERE gr_no = ?
+
         LIMIT 1
+
     `;
 
-  const [rows] = await pool.execute(sql, [grNo]);
 
-  return rows;
+    const [rows] = await pool.execute(
+
+        sql,
+
+        [grNo]
+
+    );
+
+
+    return rows;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -44,18 +102,36 @@ exports.findByGrNo = async (grNo) => {
 |--------------------------------------------------------------------------
 */
 
-exports.findByAadhar = async (aadhar) => {
-  const sql = `
+exports.findByAadhar = async (
+    aadhaar
+) => {
+
+    const sql = `
+
         SELECT student_id
+
         FROM student
+
         WHERE aadhaar = ?
+
         LIMIT 1
+
     `;
 
-  const [rows] = await pool.execute(sql, [aadhar]);
 
-  return rows;
+    const [rows] = await pool.execute(
+
+        sql,
+
+        [aadhaar]
+
+    );
+
+
+    return rows;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -63,18 +139,36 @@ exports.findByAadhar = async (aadhar) => {
 |--------------------------------------------------------------------------
 */
 
-exports.findByMobile = async (mobile) => {
-  const sql = `
+exports.findByMobile = async (
+    mobile
+) => {
+
+    const sql = `
+
         SELECT student_id
+
         FROM student
+
         WHERE mobile = ?
+
         LIMIT 1
+
     `;
 
-  const [rows] = await pool.execute(sql, [mobile]);
 
-  return rows;
+    const [rows] = await pool.execute(
+
+        sql,
+
+        [mobile]
+
+    );
+
+
+    return rows;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -82,18 +176,36 @@ exports.findByMobile = async (mobile) => {
 |--------------------------------------------------------------------------
 */
 
-exports.findByEmail = async (email) => {
-  const sql = `
+exports.findByEmail = async (
+    email
+) => {
+
+    const sql = `
+
         SELECT student_id
+
         FROM student
+
         WHERE email = ?
+
         LIMIT 1
+
     `;
 
-  const [rows] = await pool.execute(sql, [email]);
 
-  return rows;
+    const [rows] = await pool.execute(
+
+        sql,
+
+        [email]
+
+    );
+
+
+    return rows;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -101,91 +213,299 @@ exports.findByEmail = async (email) => {
 |--------------------------------------------------------------------------
 */
 
-exports.createStudent = async (connection, studentData) => {
-  const sql = `
+exports.createStudent = async (
+
+    connection,
+
+    studentData
+
+) => {
+
+    const sql = `
+
         INSERT INTO student
         (
+
             admission_no,
+
             pen_number,
+
             gr_no,
+
             roll_no,
+
+
             first_name,
+
             middle_name,
+
             last_name,
+
+
             dob,
+
             place_of_birth,
+
             gender,
+
+
             religion,
+
             category,
+
             caste,
+
             sub_caste,
+
+
             nationality,
+
             mother_tongue,
+
+
             aadhaar,
+
             blood_group,
+
+
             mobile,
+
             email,
+
+
             admission_date,
+
             last_school_attended,
+
             admission_std,
+
+
+            academic_year_id,
+
             class_id,
+
             section_id,
+
+
             photo_path,
+
             status,
+
+
             created_by,
+
             updated_by
+
         )
+
         VALUES
         (
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?
+
+            ?, ?, ?, ?,
+
+            ?, ?, ?,
+
+            ?, ?, ?,
+
+            ?, ?, ?, ?,
+
+            ?, ?,
+
+            ?, ?,
+
+            ?, ?,
+
+            ?, ?, ?,
+
+            ?, ?, ?,
+
+            ?, ?,
+
+            ?, ?
+
         )
+
     `;
 
-  const values = [
-    studentData.admission_no ?? null,
-    studentData.pen_number ?? null,
-    studentData.gr_no ?? null,
-    studentData.roll_no ?? null,
-    studentData.first_name ?? null,
-    studentData.middle_name ?? null,
-    studentData.last_name ?? null,
-    studentData.dob ?? null,
-    studentData.place_of_birth ?? null,
-    studentData.gender ?? null,
-    studentData.religion ?? null,
-    studentData.category ?? null,
-    studentData.caste ?? null,
-    studentData.sub_caste ?? null,
-    studentData.nationality ?? null,
-    studentData.mother_tongue ?? null,
-    studentData.aadhaar ?? null,
-    studentData.blood_group ?? null,
-    studentData.mobile ?? null,
-    studentData.email ?? null,
-    studentData.admission_date ?? null,
-    studentData.last_school_attended ?? null,
-    studentData.admission_std ?? null,
-    studentData.class_id ?? null,
-    studentData.section_id ?? null,
-    studentData.photo_path ?? null,
-    studentData.status ?? null,
-    studentData.created_by ?? null,
-    studentData.updated_by ?? null,
-  ];
 
-  const placeholderCount = (sql.match(/\?/g) || []).length;
-  if (placeholderCount !== values.length) {
-    throw new Error(
-      `Column/value count mismatch: SQL has ${placeholderCount} placeholders, values array has ${values.length}`,
-    );
-  }
+    const values = [
 
-  const [result] = await connection.execute(sql, values);
+        nullIfEmpty(
+            studentData.admission_no
+        ),
 
-  return result;
+        nullIfEmpty(
+            studentData.pen_number
+        ),
+
+        nullIfEmpty(
+            studentData.gr_no
+        ),
+
+        nullIfEmpty(
+            studentData.roll_no
+        ),
+
+
+        nullIfEmpty(
+            studentData.first_name
+        ),
+
+        nullIfEmpty(
+            studentData.middle_name
+        ),
+
+        nullIfEmpty(
+            studentData.last_name
+        ),
+
+
+        nullIfEmpty(
+            studentData.dob
+        ),
+
+        nullIfEmpty(
+            studentData.place_of_birth
+        ),
+
+        nullIfEmpty(
+            studentData.gender
+        ),
+
+
+        nullIfEmpty(
+            studentData.religion
+        ),
+
+        nullIfEmpty(
+            studentData.category
+        ),
+
+        nullIfEmpty(
+            studentData.caste
+        ),
+
+        nullIfEmpty(
+            studentData.sub_caste
+        ),
+
+
+        nullIfEmpty(
+            studentData.nationality
+        ),
+
+        nullIfEmpty(
+            studentData.mother_tongue
+        ),
+
+
+        nullIfEmpty(
+            studentData.aadhaar
+        ),
+
+        nullIfEmpty(
+            studentData.blood_group
+        ),
+
+
+        nullIfEmpty(
+            studentData.mobile
+        ),
+
+        nullIfEmpty(
+            studentData.email
+        ),
+
+
+        nullIfEmpty(
+            studentData.admission_date
+        ),
+
+        nullIfEmpty(
+            studentData.last_school_attended
+        ),
+
+        nullIfEmpty(
+            studentData.admission_std
+        ),
+
+
+        // Academic Details
+
+        nullIfEmpty(
+            studentData.academic_year_id
+        ),
+
+        nullIfEmpty(
+            studentData.class_id
+        ),
+
+        nullIfEmpty(
+            studentData.section_id
+        ),
+
+
+        nullIfEmpty(
+            studentData.photo_path
+        ),
+
+        nullIfEmpty(
+            studentData.status
+        ) ?? "Active",
+
+
+        nullIfEmpty(
+            studentData.created_by
+        ),
+
+        nullIfEmpty(
+            studentData.updated_by
+        ),
+
+    ];
+
+
+    const placeholderCount =
+
+        (
+            sql.match(/\?/g)
+            || []
+        ).length;
+
+
+    if (
+        placeholderCount !==
+        values.length
+    ) {
+
+        throw new Error(
+
+            `Student create mismatch: ` +
+
+            `SQL placeholders = ${placeholderCount}, ` +
+
+            `values = ${values.length}`
+
+        );
+
+    }
+
+
+    const [result] =
+
+        await connection.execute(
+
+            sql,
+
+            values
+
+        );
+
+
+    return result;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -194,124 +514,281 @@ exports.createStudent = async (connection, studentData) => {
 */
 
 exports.updateStudent = async (
-  connection,
 
-  studentId,
+    connection,
 
-  studentData,
+    studentId,
+
+    studentData
+
 ) => {
-  const sql = `
+
+    const sql = `
 
         UPDATE student
 
         SET
 
-            admission_no=?,
-            pen_number=?,
-            gr_no=?,
-            roll_no=?,
+            admission_no = ?,
 
-            first_name=?,
-            middle_name=?,
-            last_name=?,
+            pen_number = ?,
 
-            dob=?,
-            place_of_birth=?,
+            gr_no = ?,
 
-            gender=?,
-
-            religion=?,
-            category=?,
-            caste=?,
-            sub_caste=?,
-
-            nationality=?,
-            mother_tongue=?,
-
-            aadhaar=?,
-
-            blood_group=?,
-
-            mobile=?,
-            email=?,
-
-            admission_date=?,
-            last_school_attended=?,
-            admission_std=?,
-
-            class_id=?,
-            section_id=?,
-
-            photo_path=?,
-
-            status=?,
-
-            updated_by=?,
-
-            updated_at=NOW()
+            roll_no = ?,
 
 
-        WHERE student_id=?
+            first_name = ?,
+
+            middle_name = ?,
+
+            last_name = ?,
+
+
+            dob = ?,
+
+            place_of_birth = ?,
+
+
+            gender = ?,
+
+
+            religion = ?,
+
+            category = ?,
+
+            caste = ?,
+
+            sub_caste = ?,
+
+
+            nationality = ?,
+
+            mother_tongue = ?,
+
+
+            aadhaar = ?,
+
+
+            blood_group = ?,
+
+
+            mobile = ?,
+
+            email = ?,
+
+
+            admission_date = ?,
+
+            last_school_attended = ?,
+
+            admission_std = ?,
+
+
+            academic_year_id = ?,
+
+            class_id = ?,
+
+            section_id = ?,
+
+
+            photo_path = ?,
+
+
+            status = ?,
+
+
+            updated_by = ?,
+
+
+            updated_at = NOW()
+
+
+        WHERE student_id = ?
 
     `;
 
-  const values = [
-    studentData.admission_no ?? null,
-    studentData.pen_number ?? null,
-    studentData.gr_no ?? null,
-    studentData.roll_no ?? null,
 
-    studentData.first_name ?? null,
-    studentData.middle_name ?? null,
-    studentData.last_name ?? null,
+    const values = [
 
-    studentData.dob ?? null,
-    studentData.place_of_birth ?? null,
+        nullIfEmpty(
+            studentData.admission_no
+        ),
 
-    studentData.gender ?? null,
+        nullIfEmpty(
+            studentData.pen_number
+        ),
 
-    studentData.religion ?? null,
-    studentData.category ?? null,
-    studentData.caste ?? null,
-    studentData.sub_caste ?? null,
+        nullIfEmpty(
+            studentData.gr_no
+        ),
 
-    studentData.nationality ?? null,
-    studentData.mother_tongue ?? null,
+        nullIfEmpty(
+            studentData.roll_no
+        ),
 
-    studentData.aadhaar ?? null,
 
-    studentData.blood_group ?? null,
+        nullIfEmpty(
+            studentData.first_name
+        ),
 
-    studentData.mobile ?? null,
-    studentData.email ?? null,
+        nullIfEmpty(
+            studentData.middle_name
+        ),
 
-    studentData.admission_date ?? null,
-    studentData.last_school_attended ?? null,
-    studentData.admission_std ?? null,
+        nullIfEmpty(
+            studentData.last_name
+        ),
 
-    studentData.class_id ?? null,
-    studentData.section_id ?? null,
 
-    studentData.photo_path ?? null,
+        nullIfEmpty(
+            studentData.dob
+        ),
 
-    studentData.status ?? null,
+        nullIfEmpty(
+            studentData.place_of_birth
+        ),
 
-    studentData.updated_by ?? null,
 
-    studentId,
-  ];
+        nullIfEmpty(
+            studentData.gender
+        ),
 
-  const placeholderCount = (sql.match(/\?/g) || []).length;
-  if (placeholderCount !== values.length) {
-    throw new Error(
-      `Column/value count mismatch: SQL has ${placeholderCount} placeholders, values array has ${values.length}`,
-    );
-  }
 
-  const [result] = await connection.execute(sql, values);
+        nullIfEmpty(
+            studentData.religion
+        ),
 
-  return result;
+        nullIfEmpty(
+            studentData.category
+        ),
+
+        nullIfEmpty(
+            studentData.caste
+        ),
+
+        nullIfEmpty(
+            studentData.sub_caste
+        ),
+
+
+        nullIfEmpty(
+            studentData.nationality
+        ),
+
+        nullIfEmpty(
+            studentData.mother_tongue
+        ),
+
+
+        nullIfEmpty(
+            studentData.aadhaar
+        ),
+
+
+        nullIfEmpty(
+            studentData.blood_group
+        ),
+
+
+        nullIfEmpty(
+            studentData.mobile
+        ),
+
+        nullIfEmpty(
+            studentData.email
+        ),
+
+
+        nullIfEmpty(
+            studentData.admission_date
+        ),
+
+        nullIfEmpty(
+            studentData.last_school_attended
+        ),
+
+        nullIfEmpty(
+            studentData.admission_std
+        ),
+
+
+        // Academic Details
+
+        nullIfEmpty(
+            studentData.academic_year_id
+        ),
+
+        nullIfEmpty(
+            studentData.class_id
+        ),
+
+        nullIfEmpty(
+            studentData.section_id
+        ),
+
+
+        nullIfEmpty(
+            studentData.photo_path
+        ),
+
+
+        nullIfEmpty(
+            studentData.status
+        ) ?? "Active",
+
+
+        nullIfEmpty(
+            studentData.updated_by
+        ),
+
+
+        studentId,
+
+    ];
+
+
+    const placeholderCount =
+
+        (
+            sql.match(/\?/g)
+            || []
+        ).length;
+
+
+    if (
+        placeholderCount !==
+        values.length
+    ) {
+
+        throw new Error(
+
+            `Student update mismatch: ` +
+
+            `SQL placeholders = ${placeholderCount}, ` +
+
+            `values = ${values.length}`
+
+        );
+
+    }
+
+
+    const [result] =
+
+        await connection.execute(
+
+            sql,
+
+            values
+
+        );
+
+
+    return result;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -320,28 +797,43 @@ exports.updateStudent = async (
 */
 
 exports.deleteStudent = async (
-  connection,
 
-  studentId,
+    connection,
+
+    studentId
+
 ) => {
-  const sql = `
+
+    const sql = `
 
         UPDATE student
 
         SET
 
-            status=?,
+            status = "Deleted",
 
-            updated_at=NOW()
+            updated_at = NOW()
 
-        WHERE student_id=?
+        WHERE student_id = ?
 
     `;
 
-  const [result] = await connection.execute(sql, ["Deleted", studentId]);
 
-  return result;
+    const [result] =
+
+        await connection.execute(
+
+            sql,
+
+            [studentId]
+
+        );
+
+
+    return result;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -350,105 +842,126 @@ exports.deleteStudent = async (
 */
 
 exports.getStudentById = async (studentId) => {
+
   const sql = `
-  SELECT
 
-s.student_id,
+    SELECT
 
-s.admission_no,
-s.pen_number,
-s.gr_no,
-s.roll_no,
+      s.student_id,
 
-s.first_name,
-s.middle_name,
-s.last_name,
+      s.admission_no,
+      s.pen_number,
+      s.gr_no,
+      s.roll_no,
 
-s.dob,
-s.place_of_birth,
+      s.first_name,
+      s.middle_name,
+      s.last_name,
 
-s.gender,
+      s.dob,
+      s.place_of_birth,
 
-s.religion,
-s.category,
-s.caste,
-s.sub_caste,
+      s.gender,
 
-s.nationality,
-s.mother_tongue,
+      s.religion,
+      s.category,
+      s.caste,
+      s.sub_caste,
 
-s.aadhaar,
-s.blood_group,
+      s.nationality,
+      s.mother_tongue,
 
-s.mobile,
-s.email,
+      s.aadhaar,
+      s.blood_group,
 
-s.admission_date,
-s.last_school_attended,
-s.admission_std,
+      s.mobile,
+      s.email,
 
-s.class_id,
-s.section_id,
+      s.admission_date,
+      s.last_school_attended,
+      s.admission_std,
 
-s.photo_path,
-s.status,
+      s.academic_year_id,
 
-c.class_name,
+      CONCAT(
+        ay.year_start,
+        '-',
+        ay.year_end
+      ) AS academic_year,
 
-sec.section_name,
+      s.class_id,
+      s.section_id,
 
-p.father_name,
-p.father_mobile,
-p.father_occupation,
+      s.photo_path,
+      s.status,
 
-p.mother_name,
-p.mother_mobile,
-p.mother_occupation,
-p.mobile AS parent_mobile,
-p.guardian_name,
-p.guardian_mobile,
+      c.class_name,
 
-p.email AS parent_email,
+      sec.section_name,
 
-p.annual_income,
+      p.father_name,
+      p.father_mobile,
+      p.father_occupation,
 
-p.relation,
+      p.mother_name,
+      p.mother_mobile,
+      p.mother_occupation,
 
-a.house,
-a.street,
-a.village,
-a.city,
-a.taluka,
-a.district,
-a.state,
-a.country,
-a.pincode
+      p.mobile AS parent_mobile,
 
-FROM student s
+      p.guardian_name,
+      p.guardian_mobile,
 
-LEFT JOIN class_master c
-    ON c.class_id = s.class_id
+      p.email AS parent_email,
 
-LEFT JOIN section_master sec
-    ON sec.section_id = s.section_id
+      p.annual_income,
 
-LEFT JOIN parent p
-    ON p.student_id = s.student_id
+      p.relation,
 
-LEFT JOIN student_address a
-    ON a.student_id = s.student_id
+      a.house,
+      a.street,
+      a.village,
+      a.city,
+      a.taluka,
+      a.district,
+      a.state,
+      a.country,
+      a.pincode
 
-WHERE s.student_id = ?
+    FROM student s
 
-LIMIT 1;
+    LEFT JOIN academic_year ay
+      ON ay.academic_year_id = s.academic_year_id
+
+    LEFT JOIN class_master c
+      ON c.class_id = s.class_id
+
+    LEFT JOIN section_master sec
+      ON sec.section_id = s.section_id
+
+    LEFT JOIN parent p
+      ON p.student_id = s.student_id
+
+    LEFT JOIN student_address a
+      ON a.student_id = s.student_id
+
+    WHERE s.student_id = ?
+
+    LIMIT 1
+
   `;
 
-  const [rows] = await pool.execute(sql, [studentId]);
-
-  console.log("GET STUDENT BY ID =>", rows[0]); // Debug
+  const [rows] = await pool.execute(
+    sql,
+    [studentId]
+  );
 
   return rows;
+
 };
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -457,144 +970,532 @@ LIMIT 1;
 */
 
 exports.getAllStudents = async () => {
-  const sql = `
 
-       SELECT
-    student_id,  admission_no, gr_no, roll_no,
-    first_name, middle_name, last_name,
-    gender, mobile, class_id, section_id,
-    photo_path, status
-FROM student
-ORDER BY student_id DESC
+    const sql = `
 
-    `;
+        SELECT
 
-  const [rows] = await pool.execute(sql);
+            s.student_id,
 
-  return rows;
-};
+            s.admission_no,
 
-/*
-|--------------------------------------------------------------------------
-| Get Students With Filter Pagination
-|--------------------------------------------------------------------------
-*/
+            s.gr_no,
 
-exports.getStudents = async (query) => {
+            s.roll_no,
 
-  let baseSql = `
+
+            s.first_name,
+
+            s.middle_name,
+
+            s.last_name,
+
+
+            s.gender,
+
+            s.mobile,
+
+
+            s.academic_year_id,
+
+
+            CONCAT(
+
+                ay.year_start,
+
+                '-',
+
+                ay.year_end
+
+            ) AS academic_year,
+
+
+            s.class_id,
+
+            s.section_id,
+
+
+            c.class_name,
+
+            sec.section_name,
+
+
+            s.photo_path,
+
+            s.status
+
+
         FROM student s
+
+
+        LEFT JOIN academic_year ay
+
+            ON ay.academic_year_id
+            =
+            s.academic_year_id
+
+
         LEFT JOIN class_master c
-            ON s.class_id = c.class_id
+
+            ON c.class_id
+            =
+            s.class_id
+
+
         LEFT JOIN section_master sec
-            ON s.section_id = sec.section_id
-        WHERE 1 = 1
+
+            ON sec.section_id
+            =
+            s.section_id
+
+
+        ORDER BY
+
+            s.student_id DESC
+
     `;
 
-  const values = [];
 
-  if (query.search) {
-    baseSql += `
-            AND (
-                s.first_name LIKE ?
-                OR s.last_name LIKE ?
-                OR s.admission_no LIKE ?
-                OR s.gr_no LIKE ?
-            )
-        `;
-    const keyword = `%${query.search}%`;
-    values.push(keyword, keyword, keyword, keyword);
-  }
+    const [rows] =
 
-  if (query.classId) {
-    baseSql += ` AND s.class_id = ? `;
-    values.push(query.classId);
-  }
+        await pool.execute(
 
-  if (query.sectionId) {
-    baseSql += ` AND s.section_id = ? `;
-    values.push(query.sectionId);
-  }
+            sql
 
-  if (query.status) {
-    baseSql += ` AND s.status = ? `;
-    values.push(query.status);
-  }
+        );
 
-  const countSql = `SELECT COUNT(*) AS total ${baseSql}`;
 
-  const [countRows] = await pool.execute(countSql, values);
+    return rows;
 
-  const total = countRows[0]?.total || 0;
-
-  // Safe integer conversion — SQL injection se bachne ke liye
-  const page = Math.max(1, parseInt(query.page, 10) || 1);
-  const limit = Math.max(1, parseInt(query.limit, 10) || 20);
-  const offset = (page - 1) * limit;
-
-  const dataSql = `
-    SELECT
-        s.student_id,
-        s.admission_no,
-        s.gr_no,
-        s.roll_no,
-        s.first_name,
-        s.middle_name,
-        s.last_name,
-        s.mobile,
-        c.class_name,
-        sec.section_name,
-        s.photo_path,
-        s.status
-    ${baseSql}
-    ORDER BY s.student_id DESC
-    LIMIT ${limit} OFFSET ${offset}
-  `;
-
-  const [rows] = await pool.execute(dataSql, values);
-
-  return {
-    rows,
-    total,
-    page,
-    limit,
-  };
 };
+
+
 /*
 |--------------------------------------------------------------------------
-| Find Student By Admission Number For Update
+| Get Students
 |--------------------------------------------------------------------------
 */
 
-exports.findByAdmissionNoForUpdate = async (
-  admissionNo,
-
-  studentId,
+exports.getStudents = async (
+    query
 ) => {
-  const sql = `
+
+   let baseSql = `
+    FROM student s
+
+    LEFT JOIN academic_year ay
+        ON ay.academic_year_id = s.academic_year_id
+
+    LEFT JOIN class_master c
+        ON s.class_id = c.class_id
+
+    LEFT JOIN section_master sec
+        ON s.section_id = sec.section_id
+
+    WHERE 1 = 1
+`;
 
 
-        SELECT student_id
+    const values = [];
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        query.search
+    ) {
+
+        baseSql += `
+
+            AND
+            (
+
+                s.first_name LIKE ?
+
+                OR
+
+                s.middle_name LIKE ?
+
+                OR
+
+                s.last_name LIKE ?
+
+                OR
+
+                s.admission_no LIKE ?
+
+                OR
+
+                s.gr_no LIKE ?
+
+            )
+
+        `;
+
+
+        const keyword =
+
+            `%${query.search}%`;
+
+
+        values.push(
+
+            keyword,
+
+            keyword,
+
+            keyword,
+
+            keyword,
+
+            keyword
+
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Academic Year Filter
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        query.academicYearId
+    ) {
+
+        baseSql += `
+
+            AND
+
+            s.academic_year_id = ?
+
+        `;
+
+
+        values.push(
+
+            query.academicYearId
+
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Class Filter
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        query.classId
+    ) {
+
+        baseSql += `
+
+            AND
+
+            s.class_id = ?
+
+        `;
+
+
+        values.push(
+
+            query.classId
+
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Section Filter
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        query.sectionId
+    ) {
+
+        baseSql += `
+
+            AND
+
+            s.section_id = ?
+
+        `;
+
+
+        values.push(
+
+            query.sectionId
+
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Status Filter
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        query.status
+    ) {
+
+        baseSql += `
+
+            AND
+
+            s.status = ?
+
+        `;
+
+
+        values.push(
+
+            query.status
+
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Total Count
+    |--------------------------------------------------------------------------
+    */
+
+    const countSql = `
+
+        SELECT
+
+            COUNT(*)
+
+            AS total
+
+        ${baseSql}
+
+    `;
+
+
+    const [countRows] =
+
+        await pool.execute(
+
+            countSql,
+
+            values
+
+        );
+
+
+    const total =
+
+        countRows[0]?.total
+        || 0;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination
+    |--------------------------------------------------------------------------
+    */
+
+    const page =
+
+        Math.max(
+
+            1,
+
+            parseInt(
+                query.page,
+                10
+            )
+            ||
+            1
+
+        );
+
+
+    const limit =
+
+        Math.min(
+
+            100,
+
+            Math.max(
+
+                1,
+
+                parseInt(
+                    query.limit,
+                    10
+                )
+                ||
+                20
+
+            )
+
+        );
+
+
+    const offset =
+
+        (
+            page - 1
+        )
+        *
+        limit;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Student Data
+    |--------------------------------------------------------------------------
+    */
+
+const dataSql = `
+
+  SELECT
+
+    s.student_id,
+
+    s.admission_no,
+
+    s.gr_no,
+
+    s.roll_no,
+
+    s.first_name,
+
+    s.middle_name,
+
+    s.last_name,
+
+    s.mobile,
+
+    s.academic_year_id,
+
+    CONCAT(
+      ay.year_start,
+      '-',
+      ay.year_end
+    ) AS academic_year,
+
+    c.class_name,
+
+    sec.section_name,
+
+    s.photo_path,
+
+    s.status
+
+  ${baseSql}
+
+  ORDER BY s.student_id DESC
+
+  LIMIT ${limit}
+
+  OFFSET ${offset}
+
+`;
+
+
+    const [rows] =
+
+        await pool.execute(
+
+            dataSql,
+
+            values
+
+        );
+
+
+    return {
+
+        rows,
+
+        total,
+
+        page,
+
+        limit,
+
+    };
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| Find Admission Number For Update
+|--------------------------------------------------------------------------
+*/
+
+exports.findByAdmissionNoForUpdate =
+async (
+
+    admissionNo,
+
+    studentId
+
+) => {
+
+    const sql = `
+
+        SELECT
+
+            student_id
 
         FROM student
 
+        WHERE
 
-        WHERE admission_no = ?
+            admission_no = ?
 
+        AND
 
-        AND student_id <> ?
-
+            student_id <> ?
 
         LIMIT 1
 
-
     `;
 
-  const [rows] = await pool.execute(sql, [admissionNo, studentId]);
 
-  return rows;
+    const [rows] =
+
+        await pool.execute(
+
+            sql,
+
+            [
+
+                admissionNo,
+
+                studentId
+
+            ]
+
+        );
+
+
+    return rows;
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
@@ -602,12 +1503,14 @@ exports.findByAdmissionNoForUpdate = async (
 |--------------------------------------------------------------------------
 */
 
-exports.getStudentWhatsAppData = async (studentId) => {
-  const sql = `
+exports.getStudentWhatsAppData =
+async (
+    studentId
+) => {
 
+    const sql = `
 
         SELECT
-
 
             s.student_id,
 
@@ -615,21 +1518,27 @@ exports.getStudentWhatsAppData = async (studentId) => {
             s.admission_no,
 
 
-
             CONCAT(
 
                 s.first_name,
 
-                ' ',
+                " ",
 
-                IFNULL(s.middle_name,''),
+                IFNULL(
+                    s.middle_name,
+                    ""
+                ),
 
-                ' ',
+                " ",
 
-                IFNULL(s.last_name,'')
+                IFNULL(
+                    s.last_name,
+                    ""
+                )
 
-            ) AS student_name,
+            )
 
+            AS student_name,
 
 
             cm.class_name,
@@ -638,161 +1547,320 @@ exports.getStudentWhatsAppData = async (studentId) => {
             sm.section_name,
 
 
-            p.mobile AS parent_mobile,
+            p.mobile
+
+            AS parent_mobile,
 
 
             sc.school_name
 
 
-
         FROM student s
-
 
 
         LEFT JOIN parent p
 
-            ON p.student_id = s.student_id
-
+            ON p.student_id
+            =
+            s.student_id
 
 
         LEFT JOIN class_master cm
 
-            ON cm.class_id = s.class_id
-
+            ON cm.class_id
+            =
+            s.class_id
 
 
         LEFT JOIN section_master sm
 
-            ON sm.section_id = s.section_id
-
+            ON sm.section_id
+            =
+            s.section_id
 
 
         CROSS JOIN school_master sc
 
 
+        WHERE
 
-        WHERE s.student_id = ?
-
+            s.student_id = ?
 
 
         LIMIT 1
 
-
     `;
 
-  const [rows] = await pool.execute(sql, [studentId]);
 
-  return rows[0];
+    const [rows] =
+
+        await pool.execute(
+
+            sql,
+
+            [studentId]
+
+        );
+
+
+    return rows[0];
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
-| Create Parent
+| Create / Update Parent
 |--------------------------------------------------------------------------
-| NOTE: studentData keys are snake_case (matching controller)
 */
 
 exports.createParent = async (
-  connection,
 
-  studentId,
+    connection,
 
-  studentData,
+    studentId,
+
+    studentData
+
 ) => {
-  const sql = `
+
+    const sql = `
+
+        INSERT INTO parent
+        (
+
+            student_id,
+
+            father_name,
+
+            father_mobile,
+
+            father_occupation,
 
 
-INSERT INTO parent
-(
-    student_id,
-    father_name,
-    father_mobile,
-    father_occupation,
-    mother_name,
-    mother_mobile,
-    mother_occupation,
-    mobile,
-    guardian_name,
-    guardian_mobile,
-    annual_income,
-    email,
-    relation
-)
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+            mother_name,
 
-ON DUPLICATE KEY UPDATE
+            mother_mobile,
 
-father_name=VALUES(father_name),
-father_mobile=VALUES(father_mobile),
-father_occupation=VALUES(father_occupation),
-mother_name=VALUES(mother_name),
-mother_mobile=VALUES(mother_mobile),
-mother_occupation=VALUES(mother_occupation),
-mobile=VALUES(mobile),
-guardian_name=VALUES(guardian_name),
-guardian_mobile=VALUES(guardian_mobile),
-annual_income=VALUES(annual_income),
-email=VALUES(email),
-relation=VALUES(relation)
+            mother_occupation,
+
+
+            mobile,
+
+
+            guardian_name,
+
+            guardian_mobile,
+
+
+            annual_income,
+
+            email,
+
+            relation
+
+        )
+
+        VALUES
+        (
+
+            ?, ?, ?, ?,
+
+            ?, ?, ?,
+
+            ?,
+
+            ?, ?,
+
+            ?, ?, ?
+
+        )
+
+
+        ON DUPLICATE KEY UPDATE
+
+
+            father_name
+            =
+            VALUES(father_name),
+
+
+            father_mobile
+            =
+            VALUES(father_mobile),
+
+
+            father_occupation
+            =
+            VALUES(father_occupation),
+
+
+            mother_name
+            =
+            VALUES(mother_name),
+
+
+            mother_mobile
+            =
+            VALUES(mother_mobile),
+
+
+            mother_occupation
+            =
+            VALUES(mother_occupation),
+
+
+            mobile
+            =
+            VALUES(mobile),
+
+
+            guardian_name
+            =
+            VALUES(guardian_name),
+
+
+            guardian_mobile
+            =
+            VALUES(guardian_mobile),
+
+
+            annual_income
+            =
+            VALUES(annual_income),
+
+
+            email
+            =
+            VALUES(email),
+
+
+            relation
+            =
+            VALUES(relation)
 
     `;
 
-  return await connection.execute(sql, [
-    studentId,
 
-    studentData.father_name ?? null,
-    studentData.father_mobile ?? null,
-    studentData.father_occupation ?? null,
+    return await connection.execute(
 
-    studentData.mother_name ?? null,
-    studentData.mother_mobile ?? null,
-    studentData.mother_occupation ?? null,
+        sql,
 
-    studentData.parent_mobile ?? null,
+        [
 
-    studentData.guardian_name ?? null,
-    studentData.guardian_mobile ?? null,
+            studentId,
 
-    studentData.annual_income ?? null,
-    studentData.parent_email ?? null,
-    studentData.relation ?? "Father",
-  ]);
+
+            nullIfEmpty(
+                studentData.father_name
+            ),
+
+            nullIfEmpty(
+                studentData.father_mobile
+            ),
+
+            nullIfEmpty(
+                studentData.father_occupation
+            ),
+
+
+            nullIfEmpty(
+                studentData.mother_name
+            ),
+
+            nullIfEmpty(
+                studentData.mother_mobile
+            ),
+
+            nullIfEmpty(
+                studentData.mother_occupation
+            ),
+
+
+            nullIfEmpty(
+                studentData.parent_mobile
+            ),
+
+
+            nullIfEmpty(
+                studentData.guardian_name
+            ),
+
+            nullIfEmpty(
+                studentData.guardian_mobile
+            ),
+
+
+            nullIfEmpty(
+                studentData.annual_income
+            ),
+
+            nullIfEmpty(
+                studentData.parent_email
+            ),
+
+            nullIfEmpty(
+                studentData.relation
+            )
+            ??
+            "Father",
+
+        ]
+
+    );
+
 };
+
 
 /*
 |--------------------------------------------------------------------------
-| Create Address
+| Create / Update Address
 |--------------------------------------------------------------------------
 */
 
 exports.createAddress = async (
-  connection,
 
-  studentId,
+    connection,
 
-  studentData,
+    studentId,
+
+    studentData
+
 ) => {
-  const hasAddressData =
-    studentData.house ||
-    studentData.street ||
-    studentData.village ||
-    studentData.city ||
-    studentData.taluka ||
-    studentData.district ||
-    studentData.state ||
-    studentData.country ||
-    studentData.pincode;
 
-  if (!hasAddressData) {
-    return null;
-  }
+    const hasAddressData =
 
-  const sql = `
+        studentData.house ||
 
+        studentData.street ||
+
+        studentData.village ||
+
+        studentData.city ||
+
+        studentData.taluka ||
+
+        studentData.district ||
+
+        studentData.state ||
+
+        studentData.country ||
+
+        studentData.pincode;
+
+
+    if (
+        !hasAddressData
+    ) {
+
+        return null;
+
+    }
+
+
+    const sql = `
 
         INSERT INTO student_address
-
-
         (
 
             student_id,
@@ -817,43 +1885,113 @@ exports.createAddress = async (
 
         )
 
+        VALUES
+        (
 
-        VALUES(?,?,?,?,?,?,?,?,?,?)
+            ?, ?, ?, ?, ?,
+
+            ?, ?, ?, ?, ?
+
+        )
+
 
         ON DUPLICATE KEY UPDATE
 
-house=VALUES(house),
-street=VALUES(street),
-village=VALUES(village),
-city=VALUES(city),
-taluka=VALUES(taluka),
-district=VALUES(district),
-state=VALUES(state),
-country=VALUES(country),
-pincode=VALUES(pincode)
 
+            house
+            =
+            VALUES(house),
+
+
+            street
+            =
+            VALUES(street),
+
+
+            village
+            =
+            VALUES(village),
+
+
+            city
+            =
+            VALUES(city),
+
+
+            taluka
+            =
+            VALUES(taluka),
+
+
+            district
+            =
+            VALUES(district),
+
+
+            state
+            =
+            VALUES(state),
+
+
+            country
+            =
+            VALUES(country),
+
+
+            pincode
+            =
+            VALUES(pincode)
 
     `;
 
-  return await connection.execute(sql, [
-    studentId,
 
-    studentData.house || null,
+    return await connection.execute(
 
-    studentData.street || null,
+        sql,
 
-    studentData.village || null,
+        [
 
-    studentData.city || null,
+            studentId,
 
-    studentData.taluka || null,
 
-    studentData.district || null,
+            nullIfEmpty(
+                studentData.house
+            ),
 
-    studentData.state || null,
+            nullIfEmpty(
+                studentData.street
+            ),
 
-    studentData.country || null,
+            nullIfEmpty(
+                studentData.village
+            ),
 
-    studentData.pincode || null,
-  ]);
+            nullIfEmpty(
+                studentData.city
+            ),
+
+            nullIfEmpty(
+                studentData.taluka
+            ),
+
+            nullIfEmpty(
+                studentData.district
+            ),
+
+            nullIfEmpty(
+                studentData.state
+            ),
+
+            nullIfEmpty(
+                studentData.country
+            ),
+
+            nullIfEmpty(
+                studentData.pincode
+            ),
+
+        ]
+
+    );
+
 };

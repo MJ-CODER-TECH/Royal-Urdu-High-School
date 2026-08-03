@@ -701,16 +701,60 @@ exports.changeAcademicYearStatus = async (
 
 
 
-exports.getAllSubjects = async()=>{
+/*
+|--------------------------------------------------------------------------
+| Get All Active Subjects For Dropdown
+|--------------------------------------------------------------------------
+*/
+
+exports.getAllSubjects = async () => {
 
     const [rows] = await pool.execute(`
         SELECT
-            subject_id,
-            subject_name
-        FROM subjects
-        WHERE is_active = 1
-        ORDER BY subject_id ASC
+            s.subject_id,
+            s.subject_name,
+            s.class_id,
+            c.class_name
+
+        FROM subjects s
+
+        INNER JOIN class_master c
+            ON c.class_id = s.class_id
+
+        WHERE
+            s.is_active = 1
+            AND c.is_active = 1
+
+        ORDER BY
+            s.class_id ASC,
+            s.subject_name ASC
     `);
+
+    return rows;
+
+};
+
+
+
+exports.getSectionsByClassId = async (class_id) => {
+
+    const sql = `
+        SELECT
+            s.section_id,
+            s.class_id,
+            s.section_name
+        FROM section_master s
+        WHERE s.class_id = ?
+        AND s.is_active = 1
+        ORDER BY s.section_name ASC
+    `;
+
+
+    const [rows] = await pool.execute(
+        sql,
+        [class_id]
+    );
+
 
     return rows;
 

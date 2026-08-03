@@ -41,6 +41,10 @@ import ExamReportPage from "../pages/reports/examReports/ExamReportPage";
 import TimetableReport from "../pages/reports/timeTableReports/TimetableReport";
 import CertificateReportPage from "../pages/reports/certificateReports/CertificateReportPage";
 import ProfilePage from "../pages/profile/ProfilePage";
+import PromotionPage from "../pages/promotion/PromotionPage";
+import PromotionHistoryPage from "../pages/promotion/PromotionHistoryPage";
+import SchoolProfilePage from "../pages/schoolProfile/SchoolProfilePage";
+import SubjectsPage from "../pages/subjects/SubjectsPage";
 
 const AppRoutes = () => {
     return (
@@ -67,6 +71,11 @@ const AppRoutes = () => {
 <Route
  path="/profile"
  element={<ProfilePage />}
+/>
+
+<Route
+    path="/subjects"
+    element={<SubjectsPage />}
 />
 
                     {/* ================= USER MANAGEMENT ================= */}
@@ -123,9 +132,14 @@ const AppRoutes = () => {
 
 
 
+
+
 {/* ================= Master MANAGEMENT ================= */}
 
-
+<Route
+    path="/school-profile"
+    element={<SchoolProfilePage />}
+/>
 
 <Route
     path="/master/classes"
@@ -246,6 +260,18 @@ const AppRoutes = () => {
     path="/reports/certificate"
     element={<CertificateReportPage />}
 />
+
+
+
+<Route
+    path="/promotion"
+    element={<PromotionPage />}
+/>
+
+<Route
+    path="/promotion/history"
+    element={<PromotionHistoryPage />}
+/>  
 
                     {/* ================= FUTURE MODULES ================= */}
 

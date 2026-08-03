@@ -9,7 +9,7 @@ import api from "./axios";
 
 export const getTimetablesApi = async (filters = {}) => {
 
-    console.log("FILTERS =>", filters);
+    // console.log("FILTERS =>", filters);
 
     const response = await api.get("/timetable", {
         params: filters,

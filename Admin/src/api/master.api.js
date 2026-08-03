@@ -17,6 +17,16 @@ import api from "./axios";
 const CLASSES_URL = "/master/classes";
 const SECTIONS_URL = "/master/sections";
 
+
+export const getSectionsByClassApi = async(classId)=>{
+
+    const res = await api.get(
+        `/master/sections/class/${classId}`
+    );
+
+    return res.data?.data ?? res.data;
+
+};
 /*
 |--------------------------------------------------------------------------
 | Get All Classes
@@ -55,9 +65,11 @@ export const getSectionsApi = async () => {
 
 export const getAcademicYearsApi = async () => {
 
-    const res = await api.get("/master/academic-years");
+  const res = await api.get(
+    "/master/academic-years"
+  );
 
-    return res.data?.data ?? res.data;
+  return res.data?.data ?? res.data;
 
 };
 

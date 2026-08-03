@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Plus, Search, RotateCcw, X } from "lucide-react";
 
@@ -34,7 +34,6 @@ const TimetablePage = () => {
   const dispatch = useDispatch();
   const { hasPermission } = usePermission();
 
-  // Redux state with safe default fallbacks
   const { academicYears = [] } = useSelector(
     (state) => state.academicYear || {}
   );
@@ -48,7 +47,6 @@ const TimetablePage = () => {
     submitting = false,
   } = useSelector((state) => state.timetable || {});
 
-  // Local state
   const [openModal, setOpenModal] = useState(false);
   const [selectedTimetable, setSelectedTimetable] = useState(null);
   const [search, setSearch] = useState("");
@@ -61,7 +59,6 @@ const TimetablePage = () => {
     day_of_week: "",
   });
 
-  // Fetch initial dropdown data & timetables
   useEffect(() => {
     dispatch(getTimetables({}));
     dispatch(fetchAcademicYears());
@@ -70,7 +67,17 @@ const TimetablePage = () => {
     dispatch(fetchTeachers());
   }, [dispatch]);
 
-  // Form submission handler
+  const filteredSections = useMemo(() => {
+    if (!filters.class_id) {
+      return [];
+    }
+
+    return sections.filter(
+      (section) =>
+        String(section.class_id) === String(filters.class_id)
+    );
+  }, [sections, filters.class_id]);
+
   const handleSubmit = async (data) => {
     const payload = {
       ...data,
@@ -78,24 +85,33 @@ const TimetablePage = () => {
       class_id: Number(data.class_id),
       section_id: Number(data.section_id),
       subject_id: Number(data.subject_id),
-      teacher_id: data.teacher_id ? Number(data.teacher_id) : null,
+      teacher_id: data.teacher_id
+        ? Number(data.teacher_id)
+        : null,
       period_no: Number(data.period_no),
     };
 
-    if (selectedTimetable) {
-      await dispatch(
-        updateTimetable({
-          id: selectedTimetable.timetable_id,
-          data: payload,
-        })
-      );
-    } else {
-      await dispatch(createTimetable(payload));
-    }
+    try {
+      if (selectedTimetable) {
+        await dispatch(
+          updateTimetable({
+            id: selectedTimetable.timetable_id,
+            data: payload,
+          })
+        ).unwrap();
+      } else {
+        await dispatch(
+          createTimetable(payload)
+        ).unwrap();
+      }
 
-    setOpenModal(false);
-    setSelectedTimetable(null);
-    dispatch(getTimetables(filters));
+      setOpenModal(false);
+      setSelectedTimetable(null);
+
+      dispatch(getTimetables(filters));
+    } catch (error) {
+      console.error("Failed to save timetable:", error);
+    }
   };
 
   const handleAdd = () => {
@@ -109,22 +125,44 @@ const TimetablePage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this timetable period?")) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this timetable period?"
+    );
+
+    if (!confirmed) {
       return;
     }
-    await dispatch(deleteTimetable(id));
-    dispatch(getTimetables(filters));
+
+    try {
+      await dispatch(deleteTimetable(id)).unwrap();
+
+      dispatch(getTimetables(filters));
+    } catch (error) {
+      console.error("Failed to delete timetable:", error);
+    }
   };
 
   const handleStatus = async (row) => {
-    const status = row.status === "Active" ? "Inactive" : "Active";
-    await dispatch(
-      changeTimetableStatus({
-        id: row.timetable_id,
-        status,
-      })
-    );
-    dispatch(getTimetables(filters));
+    const status =
+      row.status === "Active"
+        ? "Inactive"
+        : "Active";
+
+    try {
+      await dispatch(
+        changeTimetableStatus({
+          id: row.timetable_id,
+          status,
+        })
+      ).unwrap();
+
+      dispatch(getTimetables(filters));
+    } catch (error) {
+      console.error(
+        "Failed to change timetable status:",
+        error
+      );
+    }
   };
 
   const handleSearch = () => {
@@ -139,151 +177,223 @@ const TimetablePage = () => {
       teacher_id: "",
       day_of_week: "",
     };
+
     setFilters(resetState);
     setSearch("");
+
     dispatch(getTimetables(resetState));
   };
 
-  // Memoized client-side table filter
   const tableData = useMemo(() => {
-    if (!search.trim()) return timetables;
-    const value = search.toLowerCase().trim();
+    if (!search.trim()) {
+      return timetables;
+    }
 
-    return timetables.filter(
-      (item) =>
-        item.class_name?.toLowerCase().includes(value) ||
-        item.section_name?.toLowerCase().includes(value) ||
-        item.subject_name?.toLowerCase().includes(value) ||
-        item.teacher_name?.toLowerCase().includes(value) ||
-        item.day_of_week?.toLowerCase().includes(value) ||
-        item.room?.toLowerCase().includes(value)
-    );
+    const value = search
+      .toLowerCase()
+      .trim();
+
+    return timetables.filter((item) => {
+      return (
+        item.class_name
+          ?.toLowerCase()
+          .includes(value) ||
+        item.section_name
+          ?.toLowerCase()
+          .includes(value) ||
+        item.subject_name
+          ?.toLowerCase()
+          .includes(value) ||
+        item.teacher_name
+          ?.toLowerCase()
+          .includes(value) ||
+        item.day_of_week
+          ?.toLowerCase()
+          .includes(value) ||
+        item.room
+          ?.toLowerCase()
+          .includes(value)
+      );
+    });
   }, [timetables, search]);
 
   return (
-    <div className="p-6 space-y-6 bg-slate-50 min-h-screen">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-6">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
             Timetable Management
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+
+          <p className="mt-0.5 text-xs text-slate-500">
             Manage class periods, schedules, and teacher assignments.
           </p>
         </div>
 
         {hasPermission("timetable.create") && (
           <button
+            type="button"
             onClick={handleAdd}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-indigo-700 transition-colors cursor-pointer"
+            className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-indigo-700"
           >
             <Plus size={16} />
+
             Add Timetable
           </button>
         )}
       </div>
 
-      {/* Filters Bar */}
       <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {/* Academic Year */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
           <select
             value={filters.academic_year_id}
-            onChange={(e) =>
-              setFilters({ ...filters, academic_year_id: e.target.value })
-            }
+            onChange={(e) => {
+              setFilters((previous) => ({
+                ...previous,
+                academic_year_id: e.target.value,
+              }));
+            }}
             className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-700 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">Academic Year</option>
+            <option value="">
+              Academic Year
+            </option>
+
             {academicYears.map((item) => (
-              <option key={item.academic_year_id} value={item.academic_year_id}>
+              <option
+                key={item.academic_year_id}
+                value={item.academic_year_id}
+              >
                 {item.year_start} - {item.year_end}
               </option>
             ))}
           </select>
 
-          {/* Class */}
           <select
             value={filters.class_id}
-            onChange={(e) =>
-              setFilters({ ...filters, class_id: e.target.value })
-            }
+            onChange={(e) => {
+              setFilters((previous) => ({
+                ...previous,
+                class_id: e.target.value,
+                section_id: "",
+              }));
+            }}
             className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-700 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">Select Class</option>
-            {classes.map((item, idx) => (
-              <option key={item.class_id || idx} value={item.class_id}>
+            <option value="">
+              Select Class
+            </option>
+
+            {classes.map((item) => (
+              <option
+                key={item.class_id}
+                value={item.class_id}
+              >
                 {item.class_name}
               </option>
             ))}
           </select>
 
-          {/* Section */}
           <select
             value={filters.section_id}
-            onChange={(e) =>
-              setFilters({ ...filters, section_id: e.target.value })
-            }
-            className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-700 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            disabled={!filters.class_id}
+            onChange={(e) => {
+              setFilters((previous) => ({
+                ...previous,
+                section_id: e.target.value,
+              }));
+            }}
+            className="cursor-pointer rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-700 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-100"
           >
-            <option value="">Select Section</option>
-            {sections.map((item, idx) => (
-              <option key={item.section_id || idx} value={item.section_id}>
-                {item.class_name ? `${item.class_name} - ` : ""}
+            <option value="">
+              {filters.class_id
+                ? "Select Section"
+                : "Select Class First"}
+            </option>
+
+            {filteredSections.map((item) => (
+              <option
+                key={item.section_id}
+                value={item.section_id}
+              >
                 {item.section_name}
               </option>
             ))}
           </select>
 
-          {/* Teacher */}
           <select
             value={filters.teacher_id}
-            onChange={(e) =>
-              setFilters({ ...filters, teacher_id: e.target.value })
-            }
+            onChange={(e) => {
+              setFilters((previous) => ({
+                ...previous,
+                teacher_id: e.target.value,
+              }));
+            }}
             className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-700 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">Select Teacher</option>
-            {teachers.map((item, idx) => (
+            <option value="">
+              Select Teacher
+            </option>
+
+            {teachers.map((item, index) => (
               <option
-                key={item.user_id || item.teacher_id || idx}
-                value={item.user_id || item.teacher_id}
+                key={
+                  item.user_id ||
+                  item.teacher_id ||
+                  index
+                }
+                value={
+                  item.user_id ||
+                  item.teacher_id
+                }
               >
-                {item.name || item.teacher_name || item.full_name}
+                {item.name ||
+                  item.teacher_name ||
+                  item.full_name}
               </option>
             ))}
           </select>
 
-          {/* Day */}
           <select
             value={filters.day_of_week}
-            onChange={(e) =>
-              setFilters({ ...filters, day_of_week: e.target.value })
-            }
+            onChange={(e) => {
+              setFilters((previous) => ({
+                ...previous,
+                day_of_week: e.target.value,
+              }));
+            }}
             className="rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-700 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
           >
-            <option value="">Select Day</option>
+            <option value="">
+              Select Day
+            </option>
+
             {DAYS.map((day) => (
-              <option key={day} value={day}>
+              <option
+                key={day}
+                value={day}
+              >
                 {day}
               </option>
             ))}
           </select>
 
-          {/* Filter Action Buttons */}
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={handleSearch}
-              className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors cursor-pointer"
+              className="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-indigo-700"
             >
               <Search size={14} />
+
               Filter
             </button>
+
             <button
+              type="button"
               onClick={handleReset}
-              className="inline-flex items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               title="Reset Filters"
+              className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
             >
               <RotateCcw size={14} />
             </button>
@@ -291,30 +401,35 @@ const TimetablePage = () => {
         </div>
       </div>
 
-      {/* Quick Search */}
       <div className="relative">
         <Search
           size={16}
           className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
         />
+
         <input
           type="text"
-          placeholder="Search by class, section, subject, teacher, day or room..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-xs text-slate-800 placeholder-slate-400 outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 shadow-xs"
+          placeholder="Search by class, section, subject, teacher, day or room..."
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-10 text-xs text-slate-800 shadow-xs outline-hidden placeholder:text-slate-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
         />
+
         {search && (
           <button
-            onClick={() => setSearch("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+            type="button"
+            onClick={() => {
+              setSearch("");
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 hover:text-slate-600"
           >
             <X size={15} />
           </button>
         )}
       </div>
 
-      {/* Table Component */}
       <TimetableTable
         loading={loading}
         timetables={tableData}
@@ -323,16 +438,15 @@ const TimetablePage = () => {
         onStatusChange={handleStatus}
       />
 
-      {/* Modal Component */}
       <TimetableModal
         open={openModal}
+        selectedTimetable={selectedTimetable}
+        submitting={submitting}
+        onSubmit={handleSubmit}
         onClose={() => {
           setOpenModal(false);
           setSelectedTimetable(null);
         }}
-        selectedTimetable={selectedTimetable}
-        onSubmit={handleSubmit}
-        submitting={submitting}
       />
     </div>
   );

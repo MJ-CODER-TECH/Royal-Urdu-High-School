@@ -353,3 +353,23 @@ exports.getAllSubjects = async (req,res)=>{
     });
 
 };
+
+
+
+exports.getSectionsByClassId = async(req,res)=>{
+
+    const data =
+        await masterService.getSectionsByClassId(
+            req.params.class_id
+        );
+
+
+    res.status(200).json({
+
+        success:true,
+
+        data
+
+    });
+
+};

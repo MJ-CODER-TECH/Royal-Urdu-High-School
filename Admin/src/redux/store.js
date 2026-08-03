@@ -19,7 +19,9 @@ import resultReducer from "./exam/result/resultSlice";
 import dashboardReducer from "./dashboard/dashboardSlice";
 import timetableReducer from "./timetable/timetableSlice";
 import reportsReducer from "./reports/reportsSlice";
-
+import promotionReducer from "./promotion/promotionSlice";
+import schoolProfileReducer from "./schoolProfile/schoolProfileSlice";
+import subjectReducer from "./subject/subjectSlice";
 
 export const store = configureStore({
 
@@ -44,6 +46,10 @@ export const store = configureStore({
         dashboard: dashboardReducer,
         timetable: timetableReducer,
         reports: reportsReducer,
+        promotion: promotionReducer,
+        schoolProfile: schoolProfileReducer,
+        subject: subjectReducer,
+
 
     },
 

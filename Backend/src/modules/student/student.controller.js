@@ -1,245 +1,599 @@
 const studentService = require("./student.service");
 
+
+/*
+|--------------------------------------------------------------------------
+| CREATE STUDENT
+|--------------------------------------------------------------------------
+*/
+
 exports.createStudent = async (req, res) => {
-  const studentData = {
-    admission_no: req.body.admission_no,
-    pen_number: req.body.pen_number,
-    gr_no: req.body.gr_no,
-    roll_no: req.body.roll_no,
-
-    first_name: req.body.first_name,
-    middle_name: req.body.middle_name,
-    last_name: req.body.last_name,
-
-    sub_caste: req.body.sub_caste, // ⭐ NEW
-    admission_std: req.body.admission_std,
-    parent_mobile: req.body.parent_mobile, // ✅ Add this
-
-    dob: req.body.dob,
-    gender: req.body.gender,
-
-    religion: req.body.religion,
-    category: req.body.category,
-    caste: req.body.caste,
-    nationality: req.body.nationality,
-
-    aadhaar: req.body.aadhaar,
-
-    blood_group: req.body.blood_group,
-
-    // NEW
-    mother_tongue: req.body.mother_tongue,
-    place_of_birth: req.body.place_of_birth,
-
-    mobile: req.body.mobile,
-    email: req.body.email,
-
-    admission_date: req.body.admission_date,
-    last_school_attended: req.body.last_school_attended,
-
-    class_id: req.body.class_id,
-    section_id: req.body.section_id,
-
-    status: req.body.is_active === "true" ? "Active" : "Inactive",
-
-    father_name: req.body.father_name,
-    mother_name: req.body.mother_name,
-    guardian_name: req.body.guardian_name,
-
-    parent_email: req.body.email,
-
-    father_mobile: req.body.father_mobile,
-    father_occupation: req.body.father_occupation,
-
-    mother_mobile: req.body.mother_mobile,
-    mother_occupation: req.body.mother_occupation,
-
-    guardian_mobile: req.body.guardian_mobile,
-
-    // Address fields — NOTE: house/village/taluka/country ab
-    // request se poore aa rahe hain
-    house: req.body.house,
-    // ✅ sahi
-    street: req.body.street,
-    village: req.body.village,
-    city: req.body.city,
-    taluka: req.body.taluka,
-    district: req.body.district,
-    state: req.body.state,
-    country: req.body.country,
-    pincode: req.body.pincode,
-
-    // photo_path: req.file ? req.file.path : null,
-    photo_path: req.file
-  ? `uploads/photos/${req.file.filename}`
-  : null,
-
-    // NEW — logged-in user se aana chahiye, form se nahi
-    created_by: req.user?.id ?? null,
-    updated_by: req.user?.id ?? null,
-  };
-
-  const student = await studentService.createStudent(studentData);
-
-  res.status(201).json({
-    success: true,
-    data: student,
-  });
-};
-
-exports.getAllStudents = async (req, res) => {
-  const students = await studentService.getAllStudents();
-
-  res.status(200).json({
-    success: true,
-
-    count: students.length,
-
-    data: students,
-  });
-};
-
-exports.getStudentById = async (req, res) => {
-  const { studentId } = req.params;
-
-  const student = await studentService.getStudentById(studentId);
-
-  res.status(200).json({
-    success: true,
-    data: student,
-  });
-};
-
-exports.getStudents = async (req, res) => {
-  const result = await studentService.getStudents(req.query);
-
-  res.status(200).json({
-    success: true,
-    ...result,
-  });
-};
-
-exports.updateStudent = async (req, res) => {
-
-    const { studentId } = req.params;
 
     const studentData = {
+
+        // Student Details
+
         admission_no: req.body.admission_no ?? null,
         pen_number: req.body.pen_number ?? null,
         gr_no: req.body.gr_no ?? null,
         roll_no: req.body.roll_no ?? null,
 
-        first_name: req.body.first_name ?? null,
+        first_name: req.body.first_name,
         middle_name: req.body.middle_name ?? null,
         last_name: req.body.last_name ?? null,
 
         dob: req.body.dob ?? null,
+        place_of_birth: req.body.place_of_birth ?? null,
+
         gender: req.body.gender ?? null,
 
         religion: req.body.religion ?? null,
         category: req.body.category ?? null,
         caste: req.body.caste ?? null,
+        sub_caste: req.body.sub_caste ?? null,
+
         nationality: req.body.nationality ?? null,
+        mother_tongue: req.body.mother_tongue ?? null,
 
         aadhaar: req.body.aadhaar ?? null,
-
         blood_group: req.body.blood_group ?? null,
-
-        mother_tongue: req.body.mother_tongue ?? null,
-        place_of_birth: req.body.place_of_birth ?? null,
 
         mobile: req.body.mobile ?? null,
         email: req.body.email ?? null,
-        parent_mobile: req.body.parent_mobile ?? null,
 
         admission_date: req.body.admission_date ?? null,
-        last_school_attended: req.body.last_school_attended ?? null,
-        admission_std: req.body.admission_std ?? null,
 
-        class_id: req.body.class_id ?? null,
-        section_id: req.body.section_id ?? null,
+        last_school_attended:
+            req.body.last_school_attended ?? null,
 
-        status: req.body.is_active === "true" ? "Active" : "Inactive",
+        admission_std:
+            req.body.admission_std ?? null,
 
-        father_name: req.body.father_name ?? null,
-        mother_name: req.body.mother_name ?? null,
-        guardian_name: req.body.guardian_name ?? null,
 
-        parent_email: req.body.email ?? null,
+        // IMPORTANT: Academic Details
 
-        father_mobile: req.body.father_mobile ?? null,
-        father_occupation: req.body.father_occupation ?? null,
+        academic_year_id:
+            req.body.academic_year_id ?? null,
 
-        mother_mobile: req.body.mother_mobile ?? null,
-        mother_occupation: req.body.mother_occupation ?? null,
+        class_id:
+            req.body.class_id ?? null,
 
-        guardian_mobile: req.body.guardian_mobile ?? null,
+        section_id:
+            req.body.section_id ?? null,
 
-        sub_caste: req.body.sub_caste ?? null,
 
-        house: req.body.house ?? null,
-        street: req.body.street ?? null,
-        village: req.body.village ?? null,
-        city: req.body.city ?? null,
-        taluka: req.body.taluka ?? null,
-        district: req.body.district ?? null,
-        state: req.body.state ?? null,
-        country: req.body.country ?? null,
-        pincode: req.body.pincode ?? null,
+        // Status
 
-        // photo_path: req.file
-        //     ? req.file.path
-        //     : (req.body.existing_photo_path ?? null),
+        status:
+            req.body.is_active === false ||
+            req.body.is_active === "false"
+                ? "Inactive"
+                : "Active",
+
+
+        // Parent Details
+
+        father_name:
+            req.body.father_name ?? null,
+
+        father_mobile:
+            req.body.father_mobile ?? null,
+
+        father_occupation:
+            req.body.father_occupation ?? null,
+
+
+        mother_name:
+            req.body.mother_name ?? null,
+
+        mother_mobile:
+            req.body.mother_mobile ?? null,
+
+        mother_occupation:
+            req.body.mother_occupation ?? null,
+
+
+        parent_mobile:
+            req.body.parent_mobile ?? null,
+
+
+        guardian_name:
+            req.body.guardian_name ?? null,
+
+        guardian_mobile:
+            req.body.guardian_mobile ?? null,
+
+
+        annual_income:
+            req.body.annual_income ?? null,
+
+        parent_email:
+            req.body.parent_email ??
+            req.body.email ??
+            null,
+
+        relation:
+            req.body.relation ?? "Father",
+
+
+        // Address Details
+
+        house:
+            req.body.house ?? null,
+
+        street:
+            req.body.street ?? null,
+
+        village:
+            req.body.village ?? null,
+
+        city:
+            req.body.city ?? null,
+
+        taluka:
+            req.body.taluka ?? null,
+
+        district:
+            req.body.district ?? null,
+
+        state:
+            req.body.state ?? null,
+
+        country:
+            req.body.country ?? null,
+
+        pincode:
+            req.body.pincode ?? null,
+
+
+        // Student Photo
+
         photo_path: req.file
-    ? `uploads/photos/${req.file.filename}`
-    : (req.body.existing_photo_path ?? null),
+            ? `uploads/photos/${req.file.filename}`
+            : null,
 
-        updated_by: req.user?.id ?? null,
+
+        // Logged-in User
+
+        created_by:
+            req.user?.id ?? null,
+
+        updated_by:
+            req.user?.id ?? null,
+
     };
 
-    const result = await studentService.updateStudent(
-        studentId,
-        studentData
-    );
 
-    res.status(200).json({
+    const student =
+        await studentService.createStudent(
+            studentData
+        );
+
+
+    res.status(201).json({
+
         success: true,
-        data: result
+
+        message:
+            "Student created successfully.",
+
+        data:
+            student,
+
     });
 
 };
 
-exports.deleteStudent = async (req, res) => {
-  const { studentId } = req.params;
 
-  const result = await studentService.deleteStudent(studentId);
+/*
+|--------------------------------------------------------------------------
+| GET ALL STUDENTS
+|--------------------------------------------------------------------------
+*/
 
-  res.status(200).json({
-    success: true,
+exports.getAllStudents = async (
+    req,
+    res
+) => {
 
-    data: result,
-  });
+    const students =
+        await studentService.getAllStudents();
+
+
+    res.status(200).json({
+
+        success: true,
+
+        count:
+            students.length,
+
+        data:
+            students,
+
+    });
+
 };
 
 
+/*
+|--------------------------------------------------------------------------
+| GET STUDENT BY ID
+|--------------------------------------------------------------------------
+*/
 
-exports.changeStatus = async (req, res) => {
+exports.getStudentById = async (
+    req,
+    res
+) => {
 
-    const { studentId } = req.params;
-    const { is_active } = req.body;
+    const {
+        studentId
+    } = req.params;
 
-    const status = is_active === true || is_active === "true"
-        ? "Active"
-        : "Inactive";
 
-    const result = await studentService.updateStudentStatus(
-        studentId,
-        status
-    );
+    const student =
+        await studentService.getStudentById(
+            studentId
+        );
+
 
     res.status(200).json({
+
         success: true,
-        data: result
+
+        data:
+            student,
+
+    });
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| GET STUDENTS WITH FILTER + PAGINATION
+|--------------------------------------------------------------------------
+*/
+
+exports.getStudents = async (
+    req,
+    res
+) => {
+
+    const result =
+        await studentService.getStudents(
+            req.query
+        );
+
+
+    res.status(200).json({
+
+        success: true,
+
+        ...result,
+
+    });
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE STUDENT
+|--------------------------------------------------------------------------
+*/
+
+exports.updateStudent = async (
+    req,
+    res
+) => {
+
+    const {
+        studentId
+    } = req.params;
+
+
+    const studentData = {
+
+        // Student Details
+
+        admission_no:
+            req.body.admission_no ?? null,
+
+        pen_number:
+            req.body.pen_number ?? null,
+
+        gr_no:
+            req.body.gr_no ?? null,
+
+        roll_no:
+            req.body.roll_no ?? null,
+
+
+        first_name:
+            req.body.first_name ?? null,
+
+        middle_name:
+            req.body.middle_name ?? null,
+
+        last_name:
+            req.body.last_name ?? null,
+
+
+        dob:
+            req.body.dob ?? null,
+
+        place_of_birth:
+            req.body.place_of_birth ?? null,
+
+
+        gender:
+            req.body.gender ?? null,
+
+
+        religion:
+            req.body.religion ?? null,
+
+        category:
+            req.body.category ?? null,
+
+        caste:
+            req.body.caste ?? null,
+
+        sub_caste:
+            req.body.sub_caste ?? null,
+
+
+        nationality:
+            req.body.nationality ?? null,
+
+        mother_tongue:
+            req.body.mother_tongue ?? null,
+
+
+        aadhaar:
+            req.body.aadhaar ?? null,
+
+        blood_group:
+            req.body.blood_group ?? null,
+
+
+        mobile:
+            req.body.mobile ?? null,
+
+        email:
+            req.body.email ?? null,
+
+
+        admission_date:
+            req.body.admission_date ?? null,
+
+        last_school_attended:
+            req.body.last_school_attended ?? null,
+
+        admission_std:
+            req.body.admission_std ?? null,
+
+
+        // IMPORTANT
+
+        academic_year_id:
+            req.body.academic_year_id ?? null,
+
+        class_id:
+            req.body.class_id ?? null,
+
+        section_id:
+            req.body.section_id ?? null,
+
+
+        // Status
+
+        status:
+            req.body.is_active === false ||
+            req.body.is_active === "false"
+                ? "Inactive"
+                : "Active",
+
+
+        // Parent Details
+
+        father_name:
+            req.body.father_name ?? null,
+
+        father_mobile:
+            req.body.father_mobile ?? null,
+
+        father_occupation:
+            req.body.father_occupation ?? null,
+
+
+        mother_name:
+            req.body.mother_name ?? null,
+
+        mother_mobile:
+            req.body.mother_mobile ?? null,
+
+        mother_occupation:
+            req.body.mother_occupation ?? null,
+
+
+        parent_mobile:
+            req.body.parent_mobile ?? null,
+
+
+        guardian_name:
+            req.body.guardian_name ?? null,
+
+        guardian_mobile:
+            req.body.guardian_mobile ?? null,
+
+
+        annual_income:
+            req.body.annual_income ?? null,
+
+        parent_email:
+            req.body.parent_email ??
+            req.body.email ??
+            null,
+
+        relation:
+            req.body.relation ?? "Father",
+
+
+        // Address
+
+        house:
+            req.body.house ?? null,
+
+        street:
+            req.body.street ?? null,
+
+        village:
+            req.body.village ?? null,
+
+        city:
+            req.body.city ?? null,
+
+        taluka:
+            req.body.taluka ?? null,
+
+        district:
+            req.body.district ?? null,
+
+        state:
+            req.body.state ?? null,
+
+        country:
+            req.body.country ?? null,
+
+        pincode:
+            req.body.pincode ?? null,
+
+
+        // Photo
+
+        photo_path: req.file
+            ? `uploads/photos/${req.file.filename}`
+            : (
+                req.body.existing_photo_path
+                ?? null
+            ),
+
+
+        updated_by:
+            req.user?.id ?? null,
+
+    };
+
+
+    const result =
+        await studentService.updateStudent(
+
+            studentId,
+
+            studentData
+
+        );
+
+
+    res.status(200).json({
+
+        success: true,
+
+        message:
+            "Student updated successfully.",
+
+        data:
+            result,
+
+    });
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE STUDENT
+|--------------------------------------------------------------------------
+*/
+
+exports.deleteStudent = async (
+    req,
+    res
+) => {
+
+    const {
+        studentId
+    } = req.params;
+
+
+    const result =
+        await studentService.deleteStudent(
+            studentId
+        );
+
+
+    res.status(200).json({
+
+        success: true,
+
+        data:
+            result,
+
+    });
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| CHANGE STATUS
+|--------------------------------------------------------------------------
+*/
+
+exports.changeStatus = async (
+    req,
+    res
+) => {
+
+    const {
+        studentId
+    } = req.params;
+
+
+    const {
+        is_active
+    } = req.body;
+
+
+    const status =
+
+        is_active === true ||
+        is_active === "true"
+
+            ? "Active"
+
+            : "Inactive";
+
+
+    const result =
+        await studentService.updateStudentStatus(
+
+            studentId,
+
+            status
+
+        );
+
+
+    res.status(200).json({
+
+        success: true,
+
+        data:
+            result,
+
     });
 
 };

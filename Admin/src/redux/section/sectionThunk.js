@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
     getSectionsApi as getDropdownSectionsApi,
+    getSectionsByClassApi,
 } from "../../api/master.api";
 
 
@@ -15,21 +16,24 @@ import {
 } from "../../api/sectionMaster.api";
 
 
+
 /*
 |--------------------------------------------------------------------------
-| GET SECTIONS (Dropdown)
+| GET ALL SECTIONS (Dropdown)
 |--------------------------------------------------------------------------
 */
 
 export const fetchSections = createAsyncThunk(
     "section/fetchSections",
- 
+
     async (_, thunkAPI) => {
 
         try {
 
-            const res = await getDropdownSectionsApi();
-return res.data || res;
+            const data =
+                await getDropdownSectionsApi();
+
+            return data;
 
         } catch (error) {
 
@@ -42,6 +46,44 @@ return res.data || res;
 
     }
 );
+
+
+
+/*
+|--------------------------------------------------------------------------
+| GET SECTIONS BY CLASS ID
+|--------------------------------------------------------------------------
+| Example:
+| Class 10 selected
+| API => /master/sections/class/10
+|--------------------------------------------------------------------------
+*/
+
+export const fetchSectionsByClass = createAsyncThunk(
+    "section/fetchSectionsByClass",
+
+    async (classId, thunkAPI) => {
+
+        try {
+
+            const data =
+                await getSectionsByClassApi(classId);
+
+            return data;
+
+
+        } catch (error) {
+
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message ||
+                "Failed to load class sections."
+            );
+
+        }
+
+    }
+);
+
 
 
 
@@ -60,6 +102,7 @@ export const getSections = createAsyncThunk(
 
             return await getSectionsApi();
 
+
         } catch (error) {
 
             return thunkAPI.rejectWithValue(
@@ -71,6 +114,7 @@ export const getSections = createAsyncThunk(
 
     }
 );
+
 
 
 
@@ -89,6 +133,7 @@ export const getSectionById = createAsyncThunk(
 
             return await getSectionByIdApi(id);
 
+
         } catch (error) {
 
             return thunkAPI.rejectWithValue(
@@ -100,6 +145,7 @@ export const getSectionById = createAsyncThunk(
 
     }
 );
+
 
 
 
@@ -118,6 +164,7 @@ export const createSection = createAsyncThunk(
 
             return await createSectionApi(data);
 
+
         } catch (error) {
 
             return thunkAPI.rejectWithValue(
@@ -129,6 +176,7 @@ export const createSection = createAsyncThunk(
 
     }
 );
+
 
 
 
@@ -156,6 +204,7 @@ export const updateSection = createAsyncThunk(
                 data
             );
 
+
         } catch (error) {
 
             return thunkAPI.rejectWithValue(
@@ -167,6 +216,7 @@ export const updateSection = createAsyncThunk(
 
     }
 );
+
 
 
 
@@ -190,6 +240,7 @@ export const deleteSection = createAsyncThunk(
 
             return id;
 
+
         } catch (error) {
 
             return thunkAPI.rejectWithValue(
@@ -201,6 +252,7 @@ export const deleteSection = createAsyncThunk(
 
     }
 );
+
 
 
 
@@ -223,6 +275,7 @@ export const changeSectionStatus = createAsyncThunk(
 
         try {
 
+
             await changeSectionStatusApi(
                 id,
                 is_active
@@ -231,7 +284,7 @@ export const changeSectionStatus = createAsyncThunk(
 
             return {
                 id,
-                is_active,
+                is_active
             };
 
 

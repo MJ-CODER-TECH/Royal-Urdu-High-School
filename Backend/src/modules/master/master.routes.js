@@ -101,6 +101,11 @@ router.patch(
 );
 
 
+router.get(
+"/sections/class/:class_id",
+masterController.getSectionsByClassId
+);
+
 
 // dont touch this route
 router.get("/academic-years", masterController.getAllAcademicYears);

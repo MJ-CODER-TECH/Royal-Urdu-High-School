@@ -1,18 +1,31 @@
 const repository = require("./mark.repository");
 
-
 /*
 |--------------------------------------------------------------------------
 | Calculate Grade
 |--------------------------------------------------------------------------
 */
 
-const calculateGrade = (obtained, maxMarks) => {
+const calculateGrade = (
+    obtained,
+    maxMarks
+) => {
 
-    if (!maxMarks || maxMarks <= 0) return "";
+    const obtainedMarks =
+        Number(obtained) || 0;
 
-    const percentage = (obtained / maxMarks) * 100;
+    const maximumMarks =
+        Number(maxMarks) || 0;
 
+    if (
+        !maximumMarks ||
+        maximumMarks <= 0
+    ) {
+        return "";
+    }
+
+    const percentage =
+        (obtainedMarks / maximumMarks) * 100;
 
     if (percentage >= 90) return "A+";
     if (percentage >= 80) return "A";
@@ -31,37 +44,59 @@ const calculateGrade = (obtained, maxMarks) => {
 |--------------------------------------------------------------------------
 */
 
-exports.createMark = async (data) => {
+exports.createMark = async (
+    data
+) => {
 
-
-    data.grade = calculateGrade(
-        data.obtained_marks,
-        data.max_marks
-    );
-
+    const grade =
+        calculateGrade(
+            data.obtained_marks,
+            data.max_marks
+        );
 
     return await repository.createMark([
 
-        data.student_id,
-        data.academic_year_id,
-        data.class_id,
-        data.section_id,
-        data.exam_id,
-        data.subject_id,
+        Number(
+            data.student_id
+        ),
 
-        data.max_marks,
-        data.obtained_marks,
+        Number(
+            data.academic_year_id
+        ),
 
-        data.grade,
+        Number(
+            data.class_id
+        ),
+
+        Number(
+            data.section_id
+        ),
+
+        Number(
+            data.exam_id
+        ),
+
+        Number(
+            data.subject_id
+        ),
+
+        Number(
+            data.max_marks
+        ),
+
+        Number(
+            data.obtained_marks
+        ),
+
+        grade,
 
         data.remark || "",
 
-        data.status || "Active"
+        data.status || "Active",
 
     ]);
 
 };
-
 
 
 /*
@@ -70,64 +105,83 @@ exports.createMark = async (data) => {
 |--------------------------------------------------------------------------
 */
 
-exports.bulkCreateMarks = async (marks) => {
-
+exports.bulkCreateMarks = async (
+    marks
+) => {
 
     const values = [];
 
+    for (
+        const mark of marks
+    ) {
 
-    for (const mark of marks) {
+        const maxMarks =
+            Number(
+                mark.max_marks
+            ) || 100;
 
+        const obtainedMarks =
+            mark.obtained_marks === ""
+                ? 0
+                : Number(
+                    mark.obtained_marks
+                ) || 0;
 
-        const grade = calculateGrade(
-            mark.obtained_marks,
-            mark.max_marks
-        );
-
+        const grade =
+            calculateGrade(
+                obtainedMarks,
+                maxMarks
+            );
 
         values.push([
 
-            mark.student_id,
+            Number(
+                mark.student_id
+            ),
 
-            mark.academic_year_id,
+            Number(
+                mark.academic_year_id
+            ),
 
-            mark.class_id,
+            Number(
+                mark.class_id
+            ),
 
-            mark.section_id,
+            Number(
+                mark.section_id
+            ),
 
-            mark.exam_id,
+            Number(
+                mark.exam_id
+            ),
 
-            mark.subject_id,
+            Number(
+                mark.subject_id
+            ),
 
+            maxMarks,
 
-            mark.max_marks,
-
-            mark.obtained_marks,
-
+            obtainedMarks,
 
             grade,
 
-
             mark.remark || "",
-
 
             mark.status || "Active",
 
-
             new Date(),
 
-            new Date()
+            new Date(),
 
         ]);
 
     }
 
-
-    return await repository.bulkCreateMarks(values);
+    return await repository.bulkCreateMarks(
+        values
+    );
 
 };
-
-
 
 
 /*
@@ -143,21 +197,21 @@ exports.getAllMarks = async () => {
 };
 
 
-
-
 /*
 |--------------------------------------------------------------------------
 | GET MARK BY ID
 |--------------------------------------------------------------------------
 */
 
-exports.getMarkById = async (markId) => {
+exports.getMarkById = async (
+    markId
+) => {
 
-    return await repository.getMarkById(markId);
+    return await repository.getMarkById(
+        markId
+    );
 
 };
-
-
 
 
 /*
@@ -166,26 +220,35 @@ exports.getMarkById = async (markId) => {
 |--------------------------------------------------------------------------
 */
 
-exports.getMarksByFilter = async (filters) => {
-
+exports.getMarksByFilter = async (
+    filters
+) => {
 
     return await repository.getMarksByFilter(
 
-        filters.academic_year_id,
+        Number(
+            filters.academic_year_id
+        ),
 
-        filters.class_id,
+        Number(
+            filters.class_id
+        ),
 
-        filters.section_id,
+        Number(
+            filters.section_id
+        ),
 
-        filters.exam_id,
+        Number(
+            filters.exam_id
+        ),
 
-        filters.subject_id
+        Number(
+            filters.subject_id
+        )
 
     );
 
 };
-
-
 
 
 /*
@@ -194,23 +257,34 @@ exports.getMarksByFilter = async (filters) => {
 |--------------------------------------------------------------------------
 */
 
-exports.updateMark = async (markId, data) => {
+exports.updateMark = async (
+    markId,
+    data
+) => {
 
+    const maxMarks =
+        Number(
+            data.max_marks
+        ) || 100;
 
-    const grade = calculateGrade(
+    const obtainedMarks =
+        data.obtained_marks === ""
+            ? 0
+            : Number(
+                data.obtained_marks
+            ) || 0;
 
-        data.obtained_marks,
-
-        data.max_marks
-
-    );
-
+    const grade =
+        calculateGrade(
+            obtainedMarks,
+            maxMarks
+        );
 
     return await repository.updateMark(
 
-        data.max_marks,
+        maxMarks,
 
-        data.obtained_marks,
+        obtainedMarks,
 
         grade,
 
@@ -218,13 +292,13 @@ exports.updateMark = async (markId, data) => {
 
         data.status || "Active",
 
-        markId
+        Number(
+            markId
+        )
 
     );
 
 };
-
-
 
 
 /*
@@ -233,13 +307,66 @@ exports.updateMark = async (markId, data) => {
 |--------------------------------------------------------------------------
 */
 
-exports.deleteMark = async (markId) => {
+exports.deleteMark = async (
+    markId
+) => {
 
-    return await repository.deleteMark(markId);
+    return await repository.deleteMark(
+        Number(markId)
+    );
 
 };
 
 
+/*
+|--------------------------------------------------------------------------
+| CHECK EXISTING MARK
+|--------------------------------------------------------------------------
+|
+| Full academic context check:
+|
+| Student
+| Academic Year
+| Class
+| Section
+| Exam
+| Subject
+|
+*/
+
+exports.checkExistingMark = async (
+    data
+) => {
+
+    return await repository.checkExistingMark(
+
+        Number(
+            data.student_id
+        ),
+
+        Number(
+            data.academic_year_id
+        ),
+
+        Number(
+            data.class_id
+        ),
+
+        Number(
+            data.section_id
+        ),
+
+        Number(
+            data.exam_id
+        ),
+
+        Number(
+            data.subject_id
+        )
+
+    );
+
+};
 
 
 /*
@@ -248,14 +375,32 @@ exports.deleteMark = async (markId) => {
 |--------------------------------------------------------------------------
 */
 
-exports.getStudentsForMarks = async (filters) => {
+exports.getStudentsForMarks = async (
+    filters
+) => {
 
-    return repository.getStudentsForMarks(
-        filters.exam_id,
-        filters.subject_id,
-        filters.academic_year_id,
-        filters.class_id,
-        filters.section_id
+    return await repository.getStudentsForMarks(
+
+        Number(
+            filters.exam_id
+        ),
+
+        Number(
+            filters.subject_id
+        ),
+
+        Number(
+            filters.academic_year_id
+        ),
+
+        Number(
+            filters.class_id
+        ),
+
+        Number(
+            filters.section_id
+        )
+
     );
 
 };

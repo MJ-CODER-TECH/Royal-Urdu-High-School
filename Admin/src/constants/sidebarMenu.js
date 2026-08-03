@@ -1,51 +1,73 @@
 import {
   LayoutDashboard,
-  Users,
-  Receipt,
-  CalendarDays,
-  GraduationCap,
-  ClipboardList,
-  Settings,
-  MessageCircle,
-  ShieldCheck,
-  UserPlus,
-  UserCog,
-  School,
-  FileText,
-  Notebook,
-  CreditCard,
-  Database,
-  BookOpenCheck,
 
-  // Newly added — icons for items that were missing one
-  IdCard,
-  ClipboardCheck,
-  BookOpen,
-  CalendarClock,
-  CalendarCheck2,
+  // Setup
+  Database,
+  School,
   CalendarRange,
-  Calendar,
   Layers,
   Rows3,
+  BookOpen,
   Tags,
   FileSpreadsheet,
+
+  // Students
+  Users,
+  UserPlus,
+  IdCard,
+  Notebook,
+  ClipboardCheck,
+  FileText,
+
+  // Academic
+  CalendarDays,
+  CalendarClock,
+  CalendarCheck2,
+
+  // Fees
+  Receipt,
+  CreditCard,
   Wallet,
+
+  // Exams
+  GraduationCap,
   PenSquare,
+  BookOpenCheck,
   PenLine,
   Award,
+
+  // Promotion
+  ClipboardList,
+
+  // Reports
   FileBarChart,
   FileBarChart2,
   BarChart3,
   FileCheck2,
+  Calendar,
   ScrollText,
+
+  // Communication
+  MessageCircle,
   MessageSquare,
   Megaphone,
+
+  // Users
+  ShieldCheck,
+  UserCog,
+
+  // Settings
+  Settings,
 } from "lucide-react";
 
 
 export const sidebarMenu = [
 
-  // Dashboard
+  /*
+  |--------------------------------------------------------------------------
+  | 1. Dashboard
+  |--------------------------------------------------------------------------
+  */
 
   {
     title: "Dashboard",
@@ -54,10 +76,89 @@ export const sidebarMenu = [
   },
 
 
-  // Students
+  /*
+  |--------------------------------------------------------------------------
+  | 2. Initial Setup
+  |
+  | First-time client setup order:
+  |
+  | School Profile
+  | → Academic Year
+  | → Classes
+  | → Sections
+  | → Subjects
+  | → Fee Heads
+  | → Fee Structure
+  |--------------------------------------------------------------------------
+  */
 
   {
-    title: "Students Management",
+    title: "Initial Setup",
+    icon: Database,
+
+    children: [
+
+      {
+        title: "School Profile",
+        icon: School,
+        path: "/school-profile",
+        permission: "schoolProfile.view",
+      },
+
+      {
+        title: "Academic Year",
+        icon: CalendarRange,
+        path: "/master/academic-years",
+        permission: "academicYear.view",
+      },
+
+      {
+        title: "Class Master",
+        icon: Layers,
+        path: "/master/classes",
+        permission: "class.view",
+      },
+
+      {
+        title: "Section Master",
+        icon: Rows3,
+        path: "/master/sections",
+        permission: "section.view",
+      },
+
+      {
+        title: "Subjects",
+        icon: BookOpen,
+        path: "/subjects",
+        permission: "subject.view",
+      },
+
+      {
+        title: "Fee Heads",
+        icon: Tags,
+        path: "/fee-heads",
+        permission: "feeHead.view",
+      },
+
+      {
+        title: "Fee Structure",
+        icon: FileSpreadsheet,
+        path: "/fee-structure",
+        permission: "feeStructure.view",
+      },
+
+    ],
+  },
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | 3. Student Management
+  |--------------------------------------------------------------------------
+  */
+
+  {
+    title: "Student Management",
     icon: Users,
 
     children: [
@@ -76,9 +177,6 @@ export const sidebarMenu = [
         permission: "student.view",
       },
 
-
-      // Attendance
-
       {
         title: "Attendance",
         icon: Notebook,
@@ -93,9 +191,6 @@ export const sidebarMenu = [
         permission: "attendance.mark",
       },
 
-
-      // Certificate
-
       {
         title: "Certificates",
         icon: FileText,
@@ -107,22 +202,17 @@ export const sidebarMenu = [
   },
 
 
-
-  // Academic
+  /*
+  |--------------------------------------------------------------------------
+  | 4. Academic Management
+  |--------------------------------------------------------------------------
+  */
 
   {
     title: "Academic Management",
     icon: School,
 
     children: [
-
-      {
-        title: "Subjects",
-        icon: BookOpen,
-        path: "/subjects",
-        permission: "subject.view",
-      },
-
 
       {
         title: "Manage Timetable",
@@ -132,14 +222,14 @@ export const sidebarMenu = [
       },
 
       {
-        title: "Class Timetable View",
+        title: "Class Timetable",
         icon: CalendarClock,
         path: "/timetable/class-view",
         permission: "timetable.view",
       },
 
       {
-        title: "Teacher Timetable View",
+        title: "Teacher Timetable",
         icon: CalendarCheck2,
         path: "/timetable/teacher-view",
         permission: "timetable.view",
@@ -149,66 +239,17 @@ export const sidebarMenu = [
   },
 
 
-
-  // Master
-
-  {
-    title: "Master Management",
-    icon: Database,
-
-    children: [
-
-      {
-        title: "Class Master",
-        icon: Layers,
-        path: "/master/classes",
-        permission: "class.view",
-      },
-
-
-      {
-        title: "Section Master",
-        icon: Rows3,
-        path: "/master/sections",
-        permission: "section.view",
-      },
-
-
-      {
-        title: "Academic Year",
-        icon: CalendarRange,
-        path: "/master/academic-years",
-        permission: "academicYear.view",
-      },
-
-    ],
-  },
-
-
-
-  // Fees
+  /*
+  |--------------------------------------------------------------------------
+  | 5. Fee Management
+  |--------------------------------------------------------------------------
+  */
 
   {
-    title: "Fees Management",
+    title: "Fee Management",
     icon: Receipt,
 
     children: [
-
-      {
-        title: "Fee Heads",
-        icon: Tags,
-        path: "/fee-heads",
-        permission: "feeHead.view",
-      },
-
-
-      {
-        title: "Fee Structure",
-        icon: FileSpreadsheet,
-        path: "/fee-structure",
-        permission: "feeStructure.view",
-      },
-
 
       {
         title: "Student Fee",
@@ -216,7 +257,6 @@ export const sidebarMenu = [
         path: "/fees/fee-student",
         permission: "studentFee.view",
       },
-
 
       {
         title: "Fee Collection",
@@ -229,11 +269,14 @@ export const sidebarMenu = [
   },
 
 
-
-  // Exams
+  /*
+  |--------------------------------------------------------------------------
+  | 6. Examination
+  |--------------------------------------------------------------------------
+  */
 
   {
-    title: "Exams Management",
+    title: "Examination",
     icon: GraduationCap,
 
     children: [
@@ -245,14 +288,12 @@ export const sidebarMenu = [
         permission: "exam.view",
       },
 
-
       {
         title: "Exam Subjects",
         icon: BookOpenCheck,
         path: "/exam-subjects",
         permission: "examSubject.view",
       },
-
 
       {
         title: "Marks Entry",
@@ -261,9 +302,8 @@ export const sidebarMenu = [
         permission: "marks.update",
       },
 
-
       {
-        title: "Result",
+        title: "Results",
         icon: Award,
         path: "/exam/result",
         permission: "result.view",
@@ -273,11 +313,74 @@ export const sidebarMenu = [
   },
 
 
-
-  // Reports
+  /*
+  |--------------------------------------------------------------------------
+  | 7. Promotion Management
+  |--------------------------------------------------------------------------
+  */
 
   {
-    title: "Reports Management",
+    title: "Promotion Management",
+    icon: GraduationCap,
+
+    children: [
+
+      {
+        title: "Promote Students",
+        icon: Users,
+        path: "/promotion",
+        permission: "promotion.view",
+      },
+
+      {
+        title: "Promotion History",
+        icon: ClipboardList,
+        path: "/promotion/history",
+        permission: "promotion.view",
+      },
+
+    ],
+  },
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | 8. Communication
+  |--------------------------------------------------------------------------
+  */
+
+  {
+    title: "Communication",
+    icon: MessageCircle,
+
+    children: [
+
+      {
+        title: "WhatsApp",
+        icon: MessageSquare,
+        path: "/whatsapp",
+        permission: "whatsapp.view",
+      },
+
+      {
+        title: "Notice",
+        icon: Megaphone,
+        path: "/notice",
+        permission: "notice.view",
+      },
+
+    ],
+  },
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | 9. Reports
+  |--------------------------------------------------------------------------
+  */
+
+  {
+    title: "Reports",
     icon: ClipboardList,
 
     children: [
@@ -328,36 +431,11 @@ export const sidebarMenu = [
   },
 
 
-
-  // Communication
-
-  {
-    title: "Communication",
-    icon: MessageCircle,
-
-    children: [
-
-      {
-        title: "WhatsApp",
-        icon: MessageSquare,
-        path: "/whatsapp",
-        permission: "whatsapp.view",
-      },
-
-
-      {
-        title: "Notice",
-        icon: Megaphone,
-        path: "/notice",
-        permission: "notice.view",
-      },
-
-    ],
-  },
-
-
-
-  // Users
+  /*
+  |--------------------------------------------------------------------------
+  | 10. User Management
+  |--------------------------------------------------------------------------
+  */
 
   {
     title: "User Management",
@@ -372,14 +450,12 @@ export const sidebarMenu = [
         permission: "user.view",
       },
 
-
       {
         title: "Create User",
         icon: UserPlus,
         path: "/users/create",
         permission: "user.create",
       },
-
 
       {
         title: "Roles & Permissions",
@@ -392,8 +468,11 @@ export const sidebarMenu = [
   },
 
 
-
-  // Settings
+  /*
+  |--------------------------------------------------------------------------
+  | 11. Settings
+  |--------------------------------------------------------------------------
+  */
 
   {
     title: "Settings",
@@ -401,6 +480,5 @@ export const sidebarMenu = [
     path: "/settings",
     permission: "settings.view",
   },
-
 
 ];

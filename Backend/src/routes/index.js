@@ -21,7 +21,9 @@ const resultRoutes =require("../modules/exam/result/result.routes");
 const dashboardRoutes = require("../modules/dashboard/dashboard.routes");
 const timetableRoutes = require("../modules/timetable/timetable.routes");
 const reportsRoutes = require("../modules/reports/reports.routes");
-
+const promotionRoutes = require("../modules/promotion/promote.routes");
+const schoolProfileRoutes = require("../modules/schoolProfile/schoolProfile.routes");
+const subjectRoutes = require("../modules/subject/subject.routes");
 
 router.get("/health", healthController.checkHealth);
 router.use("/api/v1/students", studentRoutes);
@@ -43,5 +45,7 @@ router.use("/api/v1/result",resultRoutes);
 router.use("/api/v1/dashboard", dashboardRoutes);
 router.use("/api/v1/timetable", timetableRoutes);
 router.use("/api/v1/reports", reportsRoutes);
-
+router.use("/api/v1/promotion",promotionRoutes );
+router.use("/api/v1/school-profile",schoolProfileRoutes);
+router.use("/api/v1/subjects", subjectRoutes);
 module.exports = router;

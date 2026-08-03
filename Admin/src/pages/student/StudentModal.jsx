@@ -1,43 +1,195 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
+
 import StudentForm from "./StudentForm";
 
-const StudentModal = ({ open, onClose, student }) => {
-  // Close on Escape key
+const StudentModal = ({
+  open,
+  onClose,
+  student,
+}) => {
+  // Close modal when Escape key is pressed
   useEffect(() => {
     if (!open) return;
-    const handleKey = (e) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    return () => {
+      document.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+    };
   }, [open, onClose]);
 
-  if (!open) return null;
+  // Prevent background page scrolling
+  useEffect(() => {
+    if (!open) return;
+
+    const previousOverflow =
+      document.body.style.overflow;
+
+    document.body.style.overflow =
+      "hidden";
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow;
+    };
+  }, [open]);
+
+  // Don't render modal when closed
+  if (!open) {
+    return null;
+  }
+
+  const handleBackdropClick = (
+    event
+  ) => {
+    if (
+      event.target ===
+      event.currentTarget
+    ) {
+      onClose();
+    }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-      <div className="relative max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-2xl">
-        {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-6 py-4">
+    <div
+      className="
+        fixed
+        inset-0
+        z-[9999]
+        flex
+        items-center
+        justify-center
+        overflow-y-auto
+        bg-slate-950/50
+        p-3
+        backdrop-blur-sm
+        sm:p-5
+      "
+      onMouseDown={
+        handleBackdropClick
+      }
+    >
+      <div
+        className="
+          relative
+          flex
+          max-h-[95vh]
+          w-full
+          max-w-6xl
+          flex-col
+          overflow-hidden
+          rounded-2xl
+          border
+          border-slate-200
+          bg-white
+          shadow-2xl
+        "
+        onMouseDown={(event) => {
+          event.stopPropagation();
+        }}
+      >
+        {/* Modal Header */}
+
+        <div
+          className="
+            flex
+            shrink-0
+            items-center
+            justify-between
+            gap-4
+            border-b
+            border-slate-200
+            bg-white
+            px-4
+            py-4
+            sm:px-6
+          "
+        >
           <div>
-            <h2 className="text-xl font-semibold text-slate-900">
-              {student ? "Edit Student" : "Add Student"}
+            <h2
+              className="
+                text-lg
+                font-bold
+                text-slate-900
+                sm:text-xl
+              "
+            >
+              {student
+                ? "Edit Student"
+                : "Add Student"}
             </h2>
-            <p className="mt-0.5 text-sm text-slate-500">
-              {student ? "Update student information." : "Create a new student record."}
+
+            <p
+              className="
+                mt-1
+                text-xs
+                text-slate-500
+                sm:text-sm
+              "
+            >
+              {student
+                ? "Update student information and save the changes."
+                : "Create a new student record by filling in the details below."}
             </p>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900"
+            aria-label="Close modal"
+            className="
+              flex
+              h-10
+              w-10
+              shrink-0
+              items-center
+              justify-center
+              rounded-lg
+              border
+              border-slate-200
+              text-slate-500
+              transition-all
+              hover:bg-rose-50
+              hover:text-rose-600
+              hover:border-rose-200
+              focus:outline-none
+              focus:ring-2
+              focus:ring-indigo-200
+            "
           >
             <X size={20} />
           </button>
         </div>
 
-        {/* Body */}
-        <div className="bg-slate-50 p-6">
-          <StudentForm student={student} onClose={onClose} />
+        {/* Modal Body */}
+
+        <div
+          className="
+            flex-1
+            overflow-y-auto
+            bg-slate-50
+            p-3
+            sm:p-5
+            lg:p-6
+          "
+        >
+          <StudentForm
+            student={student}
+            onClose={onClose}
+          />
         </div>
       </div>
     </div>
